@@ -14,7 +14,6 @@ class FileContent extends React.Component {
     };
 
     componentDidMount() {
-        
         // FOR TEST
         this.setState({
             descriptions: {
@@ -30,7 +29,7 @@ class FileContent extends React.Component {
 
     render() {
         return (
-            <List className="file-content">
+            <List className="file-content sidebar-content">
                 <List.Item>
                     <List.Content>
                         <List.Header as='a'>Filename</List.Header>

@@ -27,9 +27,46 @@
     padding-top: 10px;
 }
 
-.ui.vertical.menu .file-content .item a.header {
+.ui.vertical.menu .sidebar-content .item a.header, .ui.vertical.menu .sidebar-content .header {
     color: #a8a8a8 !important;
     text-transform: uppercase;
     font-weight: 400;
     font-size: 13px;
+}
+
+.ui.vertical.menu .sidebar-content .header {
+    padding-top: 10px;
+}
+
+.ui.vertical.menu .ui.divided.list>.item:not(:first-child) {
+    border-top: 1px solid rgba(34, 36, 38, .15);
+}
+
+.ui.vertical.menu .sidebar-content .description-list .content {
+    padding: 0;
+}
+
+.ui.vertical.menu .sidebar-content .description-list .content .description {
+    float:left;
+}
+
+.ui.vertical.menu .sidebar-content .description-list .item {
+    padding-left: 30px;
+    padding-top: .42857143em;
+    padding-bottom: .42857143em;
+}
+
+.ui.vertical.menu .sidebar-content .description-list .item .icon {
+    float: none;
+    position: absolute;
+    left: 5px;
+    margin: 0;
+    color: blue;
+}
+
+.ui.vertical.menu .sidebar-content .description-list .item .content .status-icon{
+    position: absolute;
+    right: 100px;
+    left:auto;
+    color:#333333;
 }

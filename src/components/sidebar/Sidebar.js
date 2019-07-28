@@ -4,9 +4,9 @@ import { Accordion, Menu } from 'semantic-ui-react';
 import SidebarItem from './SidebarItem';
 
 class Sidebar extends React.Component {
-    state = { activeIndex: 0 }
+    state = { activeIndex: 1 }
 
-    handleClick = (e, titleProps) => {
+    onClickHandler = (e, titleProps) => {
         const { index } = titleProps
         const { activeIndex } = this.state
         const newIndex = activeIndex === index ? -1 : index
@@ -25,11 +25,11 @@ class Sidebar extends React.Component {
         ];
         const items = menuItems.map((item, indx) => {
             return <SidebarItem
-                key={item.title.replace(/\s/g, '_')}
+                key={indx}
                 activeIndex={activeIndex}
                 index={indx}
                 title={item.title}
-                handleClick={this.handleClick}
+                handleClick={this.onClickHandler}
             />
         });
 
