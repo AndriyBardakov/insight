@@ -1,0 +1,15 @@
+.grid-container {
+    padding-top: 42px;
+    height: 100%;
+    padding-right: 260px;
+    float: left;
+    width: 100%;
+}
+
+.grid-container .ReactTable .rt-tr-group {
+    cursor: pointer;
+}
+
+.grid-container .ReactTable .pagination-bottom {
+    display: none;
+}

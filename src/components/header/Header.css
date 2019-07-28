@@ -1,0 +1,31 @@
+.insight-header.ui.header {
+    margin: 0;
+    border-bottom: 1px solid rgba(34, 36, 38, .15);
+    line-height: 40px;
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color: #000000;
+    color: #ffffff;
+    position: fixed;
+    width: 100%;
+    z-index: 105;
+}
+
+.insight-header.ui.header .header-txt {
+    font-size: 16px;
+    color: #d5d5d5;
+}
+
+.insight-header.ui.header .ui.compact.icon.button {
+    float: right;
+    padding: 0;
+    position: relative;
+    top: 12px;
+    font-size: 16px;
+    background: #000000;
+    color: #2f68b3;
+}
+
+.insight-header.ui.header .ui.compact.icon.button:hover {
+    color: #4a86d4;
+}

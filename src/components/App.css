@@ -1,0 +1,8 @@
+.insight-main-container.ui.container {
+    width: auto;
+    height: 100%;
+}
+
+#root {
+    height: 100%;
+}
