@@ -1,7 +1,7 @@
     .insight-sidebar {
         position: absolute;
         right: 0;
-        width: 260px;
+        width: 356px;
         height: 100%;
         padding-top: 55px;
         z-index: 100;
@@ -42,7 +42,7 @@
     }
 
     .ui.vertical.menu .sidebar-content.feature-form {
-        padding: 10px 20px 0 20px;
+        padding: 10px 35px 0;
     }
 
     .ui.vertical.menu .sidebar-content.feature-form .button {

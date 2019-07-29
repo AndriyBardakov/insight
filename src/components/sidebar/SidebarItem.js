@@ -4,6 +4,7 @@ import FileContent from './features/file/FileContent';
 import Metric from './features/metric/Metric';
 import SignificanceAnalysis from './features/significanceAnalysis/SignificanceAnalysis';
 import Forecast from './features/forecast/Forecast';
+import Correlation from './features/correlation/Correlations';
 
 const SidebarItem = (props) => {
     const { active, title, handleClick, name } = props;
@@ -13,7 +14,7 @@ const SidebarItem = (props) => {
         parameter_settings: '',
         significance_analysis: <SignificanceAnalysis />,
         forecast: <Forecast />,
-        correlation: ''
+        correlation: <Correlation />
     };
 
     return (
