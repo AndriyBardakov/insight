@@ -4,30 +4,39 @@ import { Accordion, Menu } from 'semantic-ui-react';
 import SidebarItem from './SidebarItem';
 
 class Sidebar extends React.Component {
-    state = { activeIndex: 1 }
+    state = {
+        activeItem: {
+            file: false,
+            metric: false,
+            parameterSettings: false,
+            significanceAnalysis: false,
+            forecast: false,
+            correlation: false
+        }
+    }
 
     onClickHandler = (e, titleProps) => {
-        const { index } = titleProps
-        const { activeIndex } = this.state
-        const newIndex = activeIndex === index ? -1 : index
-
-        this.setState({ activeIndex: newIndex })
+        const { name } = titleProps;
+        const { activeItem } = this.state;
+        activeItem[name] = !activeItem[name];
+        this.setState({ activeItem });
     }
 
     render() {
-        const { activeIndex } = this.state;
+        const { activeItem } = this.state;
         const menuItems = [
-            { title: "File" },
-            { title: "Metric" },
-            { title: "Parameter settings" },
-            { title: "Significance analysis" },
-            { title: "Correlation" }
+            { name: "file", title: "File" },
+            { name: "metric", title: "Metric" },
+            { name: "parameterSettings", title: "Parameter settings" },
+            { name: "significanceAnalysis", title: "Significance analysis" },
+            { name: "forecast", title: "Forecast" },
+            { name: "correlation", title: "Correlation" }
         ];
         const items = menuItems.map((item, indx) => {
             return <SidebarItem
                 key={indx}
-                activeIndex={activeIndex}
-                index={indx}
+                active={activeItem[item.name]}
+                name={item.name}
                 title={item.title}
                 handleClick={this.onClickHandler}
             />

@@ -2,26 +2,28 @@ import React from 'react';
 import { Accordion, Menu } from 'semantic-ui-react';
 import FileContent from './features/file/FileContent';
 import Metric from './features/metric/Metric';
+import SignificanceAnalysis from './features/significanceAnalysis/SignificanceAnalysis';
 
 const SidebarItem = (props) => {
-    const { activeIndex, index, title, handleClick } = props;
+    const { active, index, title, handleClick, name } = props;
     const contents = {
         file: <FileContent />,
         metric: <Metric />,
         parameter_settings: '',
-        significance_analysis: '',
+        significance_analysis: <SignificanceAnalysis />,
+        forecast: '',
         correlation: ''
     };
 
     return (
         <Menu.Item>
             <Accordion.Title
-                active={activeIndex === index}
+                active={active}
                 content={title}
-                index={index}
+                name={name}
                 onClick={handleClick}
             />
-            <Accordion.Content active={activeIndex === index} content={contents[title.replace(/\s/, '_').toLowerCase()]} />
+            <Accordion.Content active={active} content={contents[title.replace(/\s/, '_').toLowerCase()]} />
         </Menu.Item>
     );
 }
