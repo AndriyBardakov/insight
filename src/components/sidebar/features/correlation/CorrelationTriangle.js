@@ -213,12 +213,12 @@ function triangle(parent) {
 
     let values = props.values;
 
-      Object.keys(values).forEach((p) => {
-        Object.keys(values[p]).forEach((c) => {
-          this.updateSquare(`${p}-${c}`, values[p][c]);
-          // console.log(`update: ${p}-${c}`);
-        })
+    Object.keys(values).forEach((p) => {
+      Object.keys(values[p]).forEach((c) => {
+        this.updateSquare(`${p}-${c}`, values[p][c]);
+        // console.log(`update: ${p}-${c}`);
       })
+    })
 
   }
 
