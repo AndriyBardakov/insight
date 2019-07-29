@@ -1,29 +1,30 @@
 .insight-header.ui.header {
     margin: 0;
-    border-bottom: 1px solid rgba(34, 36, 38, .15);
-    line-height: 40px;
+    line-height: 53px;
     padding-left: 10px;
     padding-right: 10px;
-    background-color: #000000;
+    background-color: #4b4b4b;
     color: #ffffff;
     position: fixed;
     width: 100%;
     z-index: 105;
+    height:55px;
 }
 
 .insight-header.ui.header .header-txt {
-    font-size: 16px;
+    font-size: 20pt;
     color: #d5d5d5;
+    font-weight: normal;
 }
 
 .insight-header.ui.header .ui.compact.icon.button {
     float: right;
     padding: 0;
     position: relative;
-    top: 12px;
+    top: 22px;
     font-size: 16px;
-    background: #000000;
-    color: #2f68b3;
+    background: #4b4b4b;
+    color: #3880FF;
 }
 
 .insight-header.ui.header .ui.compact.icon.button:hover {

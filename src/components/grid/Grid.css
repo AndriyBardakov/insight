@@ -1,5 +1,5 @@
 .grid-container {
-    padding-top: 42px;
+    padding-top: 55px;
     height: 100%;
     padding-right: 260px;
     float: left;
@@ -12,4 +12,18 @@
 
 .grid-container .ReactTable .pagination-bottom {
     display: none;
+}
+
+.grid-container .ReactTable .rt-th.rt-resizable-header{
+    height: 55px;
+    padding-top:18px;
+}
+.grid-container .ReactTable .rt-th.rt-resizable-header .rt-resizable-header-content{
+    font-size: 12pt;
+    color:#a8a8a8;
+}
+.grid-container .ReactTable .rt-tbody .rt-td {
+    height: 55px;
+    padding: 20px 5px;
+    font-size: 14pt;
 }
