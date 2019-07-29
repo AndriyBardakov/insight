@@ -6,11 +6,12 @@ class MetricDescriptionList extends React.Component {
     state = { activeIndex: 0 }
 
     onClickHandler = (e, titleProps) => {
-        const { index } = titleProps
-        const { activeIndex } = this.state
-        const newIndex = activeIndex === index ? -1 : index
+        const { index } = titleProps;
 
-        this.setState({ activeIndex: newIndex })
+        if(this.state.activeIndex === index){
+            return;
+        }
+        this.setState({ activeIndex: index });
     }
 
     render() {

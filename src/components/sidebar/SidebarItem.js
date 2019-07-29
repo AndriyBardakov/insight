@@ -3,6 +3,7 @@ import { Accordion, Menu } from 'semantic-ui-react';
 import FileContent from './features/file/FileContent';
 import Metric from './features/metric/Metric';
 import SignificanceAnalysis from './features/significanceAnalysis/SignificanceAnalysis';
+import Forecast from './features/forecast/Forecast';
 
 const SidebarItem = (props) => {
     const { active, index, title, handleClick, name } = props;
@@ -11,7 +12,7 @@ const SidebarItem = (props) => {
         metric: <Metric />,
         parameter_settings: '',
         significance_analysis: <SignificanceAnalysis />,
-        forecast: '',
+        forecast: <Forecast />,
         correlation: ''
     };
 

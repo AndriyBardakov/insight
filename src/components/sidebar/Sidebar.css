@@ -40,6 +40,15 @@
     padding-top: 10px;
 }
 
+.ui.vertical.menu .sidebar-content.feature-form {
+    padding: 10px 20px 0 20px;
+}
+
+.ui.vertical.menu .sidebar-content.feature-form .button {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
 .ui.vertical.menu .ui.divided.list>.item:not(:first-child) {
     border-top: 1px solid rgba(34, 36, 38, .15);
 }
@@ -49,7 +58,7 @@
 }
 
 .ui.vertical.menu .sidebar-content .description-list .content .description {
-    float:left;
+    float: left;
 }
 
 .ui.vertical.menu .sidebar-content .description-list .item {
@@ -63,12 +72,12 @@
     position: absolute;
     left: 5px;
     margin: 0;
-    color: blue;
+    color: #1976d2;
 }
 
-.ui.vertical.menu .sidebar-content .description-list .item .content .status-icon{
+.ui.vertical.menu .sidebar-content .description-list .item .content .status-icon {
     position: absolute;
     right: 100px;
-    left:auto;
-    color:#333333;
+    left: auto;
+    color: #333333;
 }

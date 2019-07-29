@@ -4,7 +4,7 @@ class SignificanceAnalysis extends React.Component{
 
     render(){
         return (
-            <div>SignificanceAnalysis</div>
+            <div></div>
         );
     }
 }
