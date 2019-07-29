@@ -35,6 +35,7 @@ class Sidebar extends React.Component {
         const items = menuItems.map((item, indx) => {
             return <SidebarItem
                 key={indx}
+                activeItem={activeItem}
                 active={activeItem[item.name]}
                 name={item.name}
                 title={item.title}

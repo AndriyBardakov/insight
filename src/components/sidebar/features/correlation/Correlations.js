@@ -73,10 +73,16 @@ const values = [
         7: +Math.random().toFixed(2),
         8: +Math.random().toFixed(2),
     },
+    {
+        1: +Math.random().toFixed(2),
+        2: +Math.random().toFixed(2),
+        4: +Math.random().toFixed(2),
+        5: +Math.random().toFixed(2),
+        7: +Math.random().toFixed(2),
+        8: +Math.random().toFixed(2),
+    }
 
 ];
-
-
 
 class Correlation extends React.Component {
     state = { data: values }
@@ -95,7 +101,6 @@ class Correlation extends React.Component {
                 dataNew[l1][l2] = v;
 
                 this.setState({ data: dataNew });
-
             }
 
         }, 1000);

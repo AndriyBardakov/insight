@@ -13,8 +13,8 @@ const QualitySlider = withStyles({
         padding: '15px 0',
     },
     thumb: {
-        height: 20,
-        width: 20,
+        height: 22,
+        width: 22,
         backgroundColor: '#fff',
         boxShadow: boxShadow,
         marginTop: -10,

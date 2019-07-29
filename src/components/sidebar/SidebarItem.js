@@ -7,7 +7,7 @@ import Forecast from './features/forecast/Forecast';
 import Correlation from './features/correlation/Correlations';
 
 const SidebarItem = (props) => {
-    const { active, title, handleClick, name } = props;
+    const { active, title, handleClick, name, activeItem } = props;
     const contents = {
         file: <FileContent />,
         metric: <Metric />,
@@ -18,15 +18,17 @@ const SidebarItem = (props) => {
     };
 
     return (
-        <Menu.Item>
-            <Accordion.Title
-                active={active}
-                content={title}
-                name={name}
-                onClick={handleClick}
-            />
-            <Accordion.Content active={active} content={contents[title.replace(/\s/, '_').toLowerCase()]} />
-        </Menu.Item>
+        (name === "correlation" && active)  || !activeItem.correlation ?
+            <Menu.Item>
+                <Accordion.Title
+                    active={active}
+                    content={title}
+                    name={name}
+                    onClick={handleClick}
+                />
+                <Accordion.Content active={active} content={contents[title.replace(/\s/, '_').toLowerCase()]} />
+            </Menu.Item>
+        : null
     );
 }
 

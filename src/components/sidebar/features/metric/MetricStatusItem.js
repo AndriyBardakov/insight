@@ -3,6 +3,8 @@ import { List } from 'semantic-ui-react';
 
 const MetricStatusItem = (props) => {
     const { activeIndex, index, handleClick, title, icon } = props;
+    const cls = activeIndex === index ? '' : 'outline';
+
     return (
         <List.Item
             active={activeIndex === index}
@@ -10,7 +12,7 @@ const MetricStatusItem = (props) => {
             onClick={handleClick}
         >
             <List.Content>
-                {activeIndex === index ? <List.Icon name='check circle' /> : ''}
+                <List.Icon name="check circle" className={cls} />
                 <List.Description>
                     {title}
                 </List.Description>

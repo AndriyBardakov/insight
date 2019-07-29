@@ -48,6 +48,16 @@
         padding: 10px 35px 0;
     }
 
+    .ui.vertical.menu .sidebar-content.feature-form .MuiSlider-markLabel:first-child {
+        top: 8px;
+        left: -9%;
+    }
+
+    .ui.vertical.menu .sidebar-content.feature-form .MuiSlider-markLabel:last-child {
+        top: 8px;
+        left: -9%;
+    }
+
     .ui.vertical.menu .sidebar-content.feature-form .button {
         width: 100%;
         margin-bottom: 10px;
@@ -70,9 +80,10 @@
     }
 
     .ui.vertical.menu .sidebar-content .description-list .item {
-        padding-left: 30px;
-        padding-top: .42857143em;
-        padding-bottom: .42857143em;
+        padding-left: 45px;
+        padding-top: 19px;
+        padding-bottom: 20px;
+        background-color: #ffffff;
     }
 
     .ui.vertical.menu .sidebar-content .description-list .item .icon {
@@ -81,6 +92,14 @@
         left: 5px;
         margin: 0;
         color: #1976d2;
+        font-size:20px;
+    }
+
+    .ui.vertical.menu .sidebar-content .description-list .item .icon.check.circle.outline{
+        color: #ccc;
+    }
+    .ui.vertical.menu .sidebar-content .description-list .item:hover .icon.check.circle.outline{
+        color:#1976d2;
     }
 
     .ui.vertical.menu .sidebar-content .description-list .item .content .status-icon {
@@ -88,4 +107,5 @@
         right: 100px;
         left: auto;
         color: #333333;
+        font-size:20px;
     }
