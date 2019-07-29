@@ -18,8 +18,11 @@
     }
 
     .ui.vertical.menu>.item {
-        padding-top: 20px;
+        padding-top: 21px;
         padding-bottom: 21px;
+    }
+    .ui.vertical.menu>.item:first-child{
+        padding-top:20px;
     }
 
     .ui.vertical.menu>.item>.content {

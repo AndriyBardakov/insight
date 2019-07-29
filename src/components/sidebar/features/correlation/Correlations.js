@@ -111,7 +111,7 @@ class Correlation extends React.Component {
             <CorrelationTriangle
                 x="0"
                 y="0"
-                lineHeight="50"
+                lineHeight="56"
                 values={this.state.data}
                 dataToParent={this.dataFromChild}
             />
