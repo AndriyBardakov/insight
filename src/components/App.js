@@ -15,7 +15,7 @@ class App extends React.Component {
                 "id": ++i,
                 "type": "double",
                 "entropy": 0.76,
-                "significance": 0,
+                "significance": null,
                 "mectric": "Eucledean",
                 "status": "",
                 "name": "ns=2;s=OPC.G_PANDA.FE0502.stVerschliesskopfHorizontal.stIn.rPosition",
