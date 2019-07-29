@@ -7,7 +7,7 @@ class Forecast extends React.Component{
         return (
             <Form className="sidebar-content feature-form">
                 <Button primary type='submit'>Calculate accuracy</Button>
-                <Form.Field type='number' control='input'  />
+                <Form.Field type='number' min='0' control='input'  />
             </Form>
         );
     }
