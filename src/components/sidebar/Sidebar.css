@@ -17,16 +17,16 @@
     overflow-y: auto;
 }
 
+.ui.vertical.menu > .item > .content{
+    padding-top:20px !important;
+}
+
 .ui.vertical.menu .file-content .item {
     padding-bottom: 20px;
 }
 
 .ui.vertical.menu .file-content .item:last-child {
     padding-bottom: 10px;
-}
-
-.ui.vertical.menu .file-content .item:first-child {
-    padding-top: 10px;
 }
 
 .ui.vertical.menu .sidebar-content .item a.header, .ui.vertical.menu .sidebar-content .header {
@@ -36,10 +36,6 @@
     font-size: 13px;
 }
 
-.ui.vertical.menu .sidebar-content .header {
-    padding-top: 10px;
-}
-
 .ui.vertical.menu .sidebar-content.feature-form {
     padding: 10px 20px 0 20px;
 }
@@ -47,6 +43,10 @@
 .ui.vertical.menu .sidebar-content.feature-form .button {
     width: 100%;
     margin-bottom: 10px;
+}
+
+.ui.vertical.menu .sidebar-content .MuiSlider-marked {
+    margin-bottom: 0;
 }
 
 .ui.vertical.menu .ui.divided.list>.item:not(:first-child) {

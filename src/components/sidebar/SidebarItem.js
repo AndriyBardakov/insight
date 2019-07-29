@@ -6,7 +6,7 @@ import SignificanceAnalysis from './features/significanceAnalysis/SignificanceAn
 import Forecast from './features/forecast/Forecast';
 
 const SidebarItem = (props) => {
-    const { active, index, title, handleClick, name } = props;
+    const { active, title, handleClick, name } = props;
     const contents = {
         file: <FileContent />,
         metric: <Metric />,
