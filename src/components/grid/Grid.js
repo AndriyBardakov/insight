@@ -19,38 +19,49 @@ class Grid extends React.Component {
     };
 
     render() {
-        const { data } = this.props;
-        const leftTextStyle = { 'textAlign': 'left'};
+        const { data, onSelect } = this.props;
+        const leftTextStyle = { 'textAlign': 'left' };
         const columns = [
+            {
+                Header: 'ID',
+                accessor: 'id',
+                headerStyle: leftTextStyle,
+                maxWidth: 80
+            },
             {
                 Header: 'Type',
                 accessor: 'type',
                 headerStyle: leftTextStyle,
-                maxWidth:100
+                maxWidth: 100
             },
             {
                 Header: 'Entropy',
                 accessor: 'entropy',
                 headerStyle: leftTextStyle,
-                maxWidth:100
+                maxWidth: 100
             },
             {
                 Header: 'Significance',
                 accessor: 'significance',
                 headerStyle: leftTextStyle,
-                maxWidth:100
+                maxWidth: 100
             },
             {
                 Header: 'Mectric',
                 accessor: 'mectric',
                 headerStyle: leftTextStyle,
-                maxWidth:150
+                maxWidth: 150
             },
             {
                 Header: 'Status',
                 accessor: 'status',
                 headerStyle: leftTextStyle,
-                maxWidth:100
+                maxWidth: 80,
+                Cell: (row) => {
+                    const { status } = row.original;
+                    return status && status !== 'normal' ? (status === 'favourite' ? <i className="star icon"></i> : <i className="low vision icon"></i>) : ''
+                },
+                style: { textAlign: 'center' }
             },
             {
                 Header: 'Parameter name',
@@ -76,14 +87,17 @@ class Grid extends React.Component {
                             return {
                                 onClick: (e) => {
                                     this.setState({
-                                        selected: rowInfo.index
-                                    })
+                                        selected: rowInfo.original.id
+                                    });
+                                    onSelect(state, rowInfo);
                                 },
                                 style: {
-                                    background: rowInfo.index === this.state.selected ? '#d9eaf7' : 'inherit'
-                                }
+                                    background: rowInfo.original.id === this.state.selected ? '#d9eaf7' : 'inherit'
+                                },
+                                className: rowInfo.original.id === this.state.selected ? 'active' : ''
                             }
-                        } else {
+                        } 
+                        else {
                             return {}
                         }
                     }}

@@ -3,14 +3,19 @@ import MetricDescriptionList from './MetricDescriptionList';
 import MetricStatusList from './MetricStatusList';
 
 class Metric extends React.Component{
+    constructor(props) {
+        super(props);
+        this.child = React.createRef();
+    }
 
     render(){
+        const { onChangeStatus } = this.props;
         return (
             <div className="metric-content sidebar-content">
-                <h4 className="header">Description</h4>
+                <h4 className="header">Metric</h4>
                 <MetricDescriptionList />
                 <h4 className="header">Status</h4>
-                <MetricStatusList />
+                <MetricStatusList ref={this.child} onChangeStatus={onChangeStatus} />
             </div>
         );
     }

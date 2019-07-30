@@ -48,12 +48,15 @@
         padding: 10px 35px 0;
     }
 
-    .ui.vertical.menu .sidebar-content.feature-form .MuiSlider-markLabel:first-child {
+    #root .ui.vertical.menu .sidebar-content.feature-form .MuiSlider-root .MuiSlider-mark {
+        display: none;
+    }
+    #root .ui.vertical.menu .sidebar-content.feature-form .MuiSlider-root .MuiSlider-markLabel:first-child {
         top: 8px;
         left: -9%;
     }
 
-    .ui.vertical.menu .sidebar-content.feature-form .MuiSlider-markLabel:last-child {
+    #root .ui.vertical.menu .sidebar-content.feature-form .MuiSlider-root .MuiSlider-markLabel:last-child {
         top: 8px;
         left: -9%;
     }

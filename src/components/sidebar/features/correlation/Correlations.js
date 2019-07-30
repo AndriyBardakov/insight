@@ -2,17 +2,29 @@ import React from 'react';
 import CorrelationTriangle from './CorrelationTriangle';
 
 // START GENERATE DATA FOR TRIANGLE
-const arr = [[1,3,5,6], [1,3,5,6], [1,2,4,5,7,9], [1,2,4,5,7,9], [1,2,4,5,8,9], [2,3,5,6], [1,3,5,7], [1,3,5,6,8], [1,2,3,5,7,9], [1,2,4,5,7,8], [1,2,4,5,7,8]];
+const arr = [
+    [1, 3, 5, 6],
+    [1, 3, 5, 6],
+    [1, 2, 4, 5, 7, 9],
+    [1, 2, 4, 5, 7, 9],
+    [1, 2, 4, 5, 8, 9],
+    [2, 3, 5, 6],
+    [1, 3, 5, 7],
+    [1, 3, 5, 6, 8],
+    [1, 2, 3, 5, 7, 9],
+    [1, 2, 4, 5, 7, 8],
+    [1, 2, 4, 5, 7, 8]
+];
 const values = [];
 const getRandom = () => {
     return +Math.random().toFixed(2);
 }
 
-for(let i = 0; i < arr.length; i++){
+for (let i = 0; i < arr.length; i++) {
     let childArr = arr[i];
     let valueObj = {};
 
-    for(let k = 0; k < childArr.length; k++){
+    for (let k = 0; k < childArr.length; k++) {
         valueObj[childArr[k]] = getRandom();
     }
 
