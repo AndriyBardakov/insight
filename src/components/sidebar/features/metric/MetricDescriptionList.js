@@ -1,5 +1,5 @@
 import React from 'react';
-import { List } from 'semantic-ui-react';
+import { List, Form, Input, Button } from 'semantic-ui-react';
 import MetricDescriptionItem from './MetricDescriptionItem';
 
 class MetricDescriptionList extends React.Component {
@@ -33,7 +33,25 @@ class MetricDescriptionList extends React.Component {
             />;
         });
         return (
-            <List divided relaxed selection items={listItems} className="description-list"></List>
+            <div>
+                <List divided relaxed selection items={listItems} style={{margin:0}} className="description-list"></List>
+                <Form className="sidebar-content feature-form">
+                    <Form.Field
+                        control={Input}
+                        placeholder='Parameter 1'
+                    />
+                    <Form.Field
+                        control={Input}
+                        placeholder='Parameter 2'
+                    />
+                    <Form.Field
+                        id='form-button-control-public'
+                        control={Button}
+                        content='Use Parameters'
+                        primary
+                    />
+                </Form>
+            </div>
         );
     }
 }
