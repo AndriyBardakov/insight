@@ -5,6 +5,9 @@ import Connector from './connector/Connector';
 import Grid from './grid/Grid';
 import Sidebar from './sidebar/Sidebar';
 
+const WS_URL = 'ws://95.216.78.62:9002';
+const ws = new WebSocket(WS_URL);
+
 class App extends React.Component {
     constructor(props) {
         super(props);
@@ -51,7 +54,9 @@ class App extends React.Component {
     }
 
     componentDidMount() {
-        // this.getData(); // FOR TEST
+        ws.onopen = () => {
+            console.log('ws connection open');
+        }
     }
 
     onSelectRow = (e, info) => {
@@ -78,12 +83,36 @@ class App extends React.Component {
         }
     }
 
-    onSubmitConnector = (url) => {
-        // TODO: get data from server for target Url
-
+    onSubmitConnector = (url, data) => {
         this.setState({ connected: true });
         this.setState({ serverUrl: url });
-        this.getData(); // FOR TEST
+        // this.getData(); // FOR TEST
+
+        const obj = {
+            "request_id": 1,
+            "info": {
+                "request_type": 2
+            }
+        };
+
+        ws.send(JSON.stringify(obj));
+        ws.onmessage = evt => {
+            console.log(JSON.parse(evt.data));
+            const res = JSON.parse(evt.data);
+            let data = res.schema.fields;
+            data = data.map((d, i) => {
+                return {
+                    "id": i + 1,
+                    "type": d.type,
+                    "entropy": null,
+                    "significance": null,
+                    "mectric": "",
+                    "status": "",
+                    "name": d.name
+                }
+            });
+            this.setGridData(data);
+        }
     }
 
     onChangeServer = () => {

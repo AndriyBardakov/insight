@@ -51,7 +51,7 @@ class Correlation extends React.Component {
                 let l2 = Math.floor(Math.random() * values.length);
 
                 if (this.state.data[l1][l2] == null) {
-                    console.log("l1: " + l1 + " // l2: " + l2 + " // v: " + v);
+                    // console.log("l1: " + l1 + " // l2: " + l2 + " // v: " + v);
 
                     let dataNew = this.state.data;
                     dataNew[l1][l2] = v;

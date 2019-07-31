@@ -2,7 +2,6 @@ import React from 'react';
 import { Form, Input, Button, Icon } from 'semantic-ui-react';
 import './Connector.css';
 
-
 class Connector extends React.Component {
     _isMounted = false;
     state = { url: '', connecting: false };
@@ -12,13 +11,13 @@ class Connector extends React.Component {
     }
 
     setUrl = (url) => {
-        if(this._isMounted){
+        if (this._isMounted) {
             this.setState({ url });
         }
     }
 
     setConnecting = (val) => {
-        if(this._isMounted){
+        if (this._isMounted) {
             this.setState({ connecting: val });
         }
     }
@@ -26,6 +25,7 @@ class Connector extends React.Component {
     onSubmit = () => {
         this.setConnecting(true);
         const that = this;
+
         setTimeout(function () { // timer for simulate connection delay
             that.props.onSubmit(that.state.url);
             that.setUrl('');
