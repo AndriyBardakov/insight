@@ -1,0 +1,39 @@
+.connector-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.connector-container .ui.form {
+    width: 343px;
+}
+
+.connector-container .ui.form .field:last-child {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.connector-container .ui.form .field:last-child button {
+    width: 243px;
+    margin: 0px;
+}
+
+.connector-container .ui.form .field label {
+    float: left;
+    width: 100px;
+    position: relative;
+    top: 9px;
+    font-size: 20px;
+    font-weight: 400;
+}
+
+.connector-container .ui.form .field .ui.input {
+    width: 243px;
+    right: 0;
+}
+
+.connector-container .ui.form .field .ui.input input {
+    border-radius: 0;
+    border-width: 0 0 1px 0;
+}
