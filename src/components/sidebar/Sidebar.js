@@ -31,7 +31,7 @@ class Sidebar extends React.Component {
 
     render() {
         const { activeItem } = this.state;
-
+        const { server, dbInfo, metricType, onChangeStatus } = this.props;
         return (
             <div className="insight-sidebar">
                 <Accordion as={Menu} vertical>
@@ -44,7 +44,7 @@ class Sidebar extends React.Component {
                                 name="file"
                             />
                             <Accordion.Content active={activeItem.file}>
-                                <FileContent server={this.props.server} dbInfo={this.props.dbInfo} />
+                                <FileContent server={server} dbInfo={dbInfo} />
                             </Accordion.Content>
                         </Menu.Item>}
                     {activeItem.correlation ? null :
@@ -56,7 +56,7 @@ class Sidebar extends React.Component {
                                 name="metric"
                             />
                             <Accordion.Content active={activeItem.metric}>
-                                <Metric ref={this.child} onChangeStatus={this.props.onChangeStatus} />
+                                <Metric ref={this.child} metricType={metricType} onChangeStatus={onChangeStatus} />
                             </Accordion.Content>
                         </Menu.Item>}
                     {activeItem.correlation ? null :

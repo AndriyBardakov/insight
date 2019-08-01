@@ -11,9 +11,10 @@ import { displayMessage, parseUrl } from './helpers';
 // const WS_URL = 'ws://95.216.78.62:9002';
 let ws = null;
 
-const requestIds = {
-    gridData: 1,
-    dbInfo: 2
+const protocol = {
+    gridData: { id: 1, type: 2 },
+    dbInfo: { id: 2, type: 6 },
+    metricData: { id: 3, type: 5 }
 }
 
 const validateIpAndPort = (input) => {
@@ -31,10 +32,17 @@ const validateNum = (input, min, max) => {
     const num = +input;
     return num >= min && num <= max && input === num.toString();
 }
+
+const sendRequest = (id, type) => {
+    ws.send(JSON.stringify({
+        "request_id": id,
+        "info": { "request_type": type }
+    }));
+}
 class App extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { entries: [], selected: null, connected: false, serverUrl: '', dbInfo: {} };
+        this.state = { entries: [], selected: null, connected: false, serverUrl: '', dbInfo: {}, metricType: '' };
         this.child = React.createRef();
     }
 
@@ -74,19 +82,15 @@ class App extends React.Component {
         this.setState({ entries: newData });
     }
 
-    loadDBInfo = (dbInfo) => {
-        this.setState({ dbInfo });
-    }
-
-    componentDidMount() {
-
-    }
+    componentDidMount() { }
 
     onSelectRow = (e, info) => {
         this.setState({ selected: info });
-        const { status } = info.original;
+        const { status, type } = info.original;
         const index = status && status !== "normal" ? (status === "favourite" ? 1 : 2) : 0;
-        this.child.current.child.current.child.current.setActiveIndex(index);
+        this.child.current.child.current.childMetricsStatusList.current.setActiveIndex(index);
+        this.setState({ metricType: type });
+        this.child.current.child.current.childMetricDescriptionList.current.setType(type);
     }
 
     onChangeStatus = (type) => {
@@ -100,7 +104,6 @@ class App extends React.Component {
                     const body = document.querySelector('.rt-tbody');
                     const row = document.querySelector('.rt-tr.active');
                     body.scrollTo(0, row.offsetTop - (type === "hidden" ? 0 : 55));
-
                 });
             }
         }
@@ -108,28 +111,38 @@ class App extends React.Component {
 
     onOpenConnection = () => {
         this.setState({ connected: true });
-        ws.send(JSON.stringify({
-            "request_id": requestIds.gridData,
-            "info": { "request_type": 2 }
-        }));
+        const { gridData, dbInfo, metricData } = protocol;
 
-        ws.send(JSON.stringify({
-            "request_id": requestIds.dbInfo,
-            "info": { "request_type": 6 }
-        }));
+        sendRequest(gridData.id, gridData.type);
+        sendRequest(dbInfo.id, dbInfo.type);
+        sendRequest(metricData.id, metricData.type);
     }
 
     onMessage = (evt) => {
         const res = JSON.parse(evt.data);
+        const { gridData, dbInfo, metricData } = protocol;
+
+        console.log(res);
 
         switch (res.request_id) {
-            case requestIds.gridData:
+            case gridData.id:
                 this.setState({ serverUrl: evt.origin });
                 let data = res.schema.fields;
                 this.loadGridData(data);
                 break;
-            case requestIds.dbInfo:
-                this.loadDBInfo(res.dbinfo);
+            case dbInfo.id:
+                this.setState({ dbInfo: res.dbinfo });
+                break;
+            case metricData.id:
+                const { metrics } = res;
+                if (metrics && metrics.length) {
+                    let obj = {};
+                    for (let m of metrics) {
+                        obj[m.type] = m.metrics;
+                    }
+                    this.child.current.child.current.childMetricDescriptionList.current.setMetrics(obj);
+                }
+
                 break;
             default:
                 break;
@@ -188,7 +201,7 @@ class App extends React.Component {
     }
 
     render() {
-        const { serverUrl, connected, entries, dbInfo } = this.state;
+        const { serverUrl, connected, entries, dbInfo, metricType } = this.state;
         return (
             <div className="insight-main-container ui container">
                 <Header connected={connected} onChangeServer={this.onChangeServer} />
@@ -200,6 +213,7 @@ class App extends React.Component {
                             server={serverUrl}
                             onChangeStatus={this.onChangeStatus}
                             dbInfo={dbInfo}
+                            metricType={metricType}
                         />
                     </div>
                     :

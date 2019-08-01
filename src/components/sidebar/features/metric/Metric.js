@@ -5,17 +5,18 @@ import MetricStatusList from './MetricStatusList';
 class Metric extends React.Component{
     constructor(props) {
         super(props);
-        this.child = React.createRef();
+        this.childMetricsStatusList = React.createRef();
+        this.childMetricDescriptionList = React.createRef();
     }
 
     render(){
-        const { onChangeStatus } = this.props;
+        const { onChangeStatus, metricType } = this.props;
         return (
             <div className="metric-content sidebar-content">
                 <h4 className="header">Metric</h4>
-                <MetricDescriptionList />
+                <MetricDescriptionList ref={this.childMetricDescriptionList} metricType={metricType} />
                 <h4 className="header">Status</h4>
-                <MetricStatusList ref={this.child} onChangeStatus={onChangeStatus} />
+                <MetricStatusList ref={this.childMetricsStatusList} onChangeStatus={onChangeStatus} />
             </div>
         );
     }
