@@ -38,23 +38,6 @@ class App extends React.Component {
         this.child = React.createRef();
     }
 
-    // FOR TEST
-    getTestData = () => {
-        let newData = [];
-        for (let i = 0; i < 300; i++) {
-            newData.push({
-                "id": i + 1,
-                "type": "double",
-                "entropy": 0.76,
-                "significance": null,
-                "mectric": "Eucledean",
-                "status": i === 5 || i === 8 ? "favourite" : (i === 7 ? "hidden" : ""),
-                "name": "ns=2;s=OPC.G_PANDA.FE0502.stVerschliesskopfHorizontal.stIn.rPosition",
-            });
-        }
-        this.setGridData(newData);
-    }
-
     loadGridData = (data) => {
         data = data.map((d, i) => {
             return {
@@ -68,10 +51,6 @@ class App extends React.Component {
             }
         });
         this.setGridData(data);
-    }
-
-    loadDBInfo = (dbInfo) => {
-        this.setState({ dbInfo });
     }
 
     setGridData = (data) => {
@@ -95,13 +74,12 @@ class App extends React.Component {
         this.setState({ entries: newData });
     }
 
-    componentDidMount() {
-
+    loadDBInfo = (dbInfo) => {
+        this.setState({ dbInfo });
     }
 
-    closeConnection = () => {
-        ws.close();
-        console.log('connection closed');
+    componentDidMount() {
+
     }
 
     onSelectRow = (e, info) => {
@@ -140,6 +118,7 @@ class App extends React.Component {
             "info": { "request_type": 6 }
         }));
     }
+
     onMessage = (evt) => {
         const res = JSON.parse(evt.data);
 
@@ -155,6 +134,11 @@ class App extends React.Component {
             default:
                 break;
         }
+    }
+
+    closeConnection = () => {
+        ws.close();
+        console.log('connection closed');
     }
 
     onSubmitConnector = (url, cb) => {

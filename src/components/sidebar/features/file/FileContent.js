@@ -1,6 +1,6 @@
 import React from 'react';
 import { List } from 'semantic-ui-react';
-import { parseUrl } from '../../../helpers';
+import { parseUrl, numberWithCommas } from '../../../helpers';
 
 class FileContent extends React.Component {
 
@@ -9,7 +9,7 @@ class FileContent extends React.Component {
         if(start_time && end_time){
             let startDate = new Date(start_time);
             let endDate = new Date(end_time);
-            const period = `${startDate.getDate()}.${startDate.getMonth() + 1}.${startDate.getFullYear()}, ${startDate.getHours()}:${startDate.getMinutes()} Uhr - ${endDate.getDate()}.${endDate.getMonth() + 1}.${endDate.getFullYear()}, ${endDate.getHours()}:${endDate.getMinutes()} Uhr`;
+            const period = `${startDate.getDate()}.${startDate.getMonth() + 1}.${startDate.getFullYear()}, ${startDate.getHours()}:${startDate.getMinutes()} - ${endDate.getDate()}.${endDate.getMonth() + 1}.${endDate.getFullYear()}, ${endDate.getHours()}:${endDate.getMinutes()}`;
             return period;
         }
         return '';
@@ -45,10 +45,10 @@ class FileContent extends React.Component {
                 diff = diff - (seconds * msSec);
             }
             
-            return `${days ? days + ' Tag' + (days > 1 ? 'e' : '') + ', ': ''}
-                ${hours ? hours + ' Stunde' + (hours > 1 ? 'n' : '') + ', ' : (days ? '0 Studen, ' : '')}
-                ${mins ? mins + ' Minute' + (mins > 1 ? 'n' : '') + ', ' : (days || hours ? '0 Minuten, ' : '')}
-                ${seconds ? seconds + 'Sekunde' + (seconds > 1 ? 'n' : '') : (days || hours || mins ? '0 Sekunden' : '')}`; 
+            return `${days ? days + ' Day' + (days > 1 ? 's' : '') + ', ': ''}
+                ${hours ? hours + ' Hour' + (hours > 1 ? 's' : '') + ', ' : (days ? '0 Hours, ' : '')}
+                ${mins ? mins + ' Minute' + (mins > 1 ? 's' : '') + ', ' : (days || hours ? '0 Minutes, ' : '')}
+                ${seconds ? seconds + 'Second' + (seconds > 1 ? 's' : '') : (days || hours || mins ? '0 Seconds' : '')}`; 
         }
         return '';
     }
@@ -58,7 +58,7 @@ class FileContent extends React.Component {
         data_per_parameter = data_per_parameter || 0;
         number_of_parameters = number_of_parameters || 0;
 
-        return data_per_parameter * number_of_parameters;
+        return numberWithCommas(data_per_parameter * number_of_parameters);
     }
 
     render() {
@@ -92,7 +92,7 @@ class FileContent extends React.Component {
                     <List.Content>
                         <List.Header as='a'>Number of parameters</List.Header>
                         <List.Description>
-                            {this.props.dbInfo.data_per_parameter}
+                            {numberWithCommas(this.props.dbInfo.data_per_parameter)}
                         </List.Description>
                     </List.Content>
                 </List.Item>
@@ -100,7 +100,7 @@ class FileContent extends React.Component {
                     <List.Content>
                         <List.Header as='a'>Number of data</List.Header>
                         <List.Description>
-                            {this.props.dbInfo.number_of_parameters}
+                            {numberWithCommas(this.props.dbInfo.number_of_parameters)}
                         </List.Description>
                     </List.Content>
                 </List.Item>
