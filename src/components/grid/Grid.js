@@ -18,6 +18,10 @@ class Grid extends React.Component {
         data: []
     };
 
+    componentWillUnmount() {
+        this.props.onClose();
+    }
+
     render() {
         const { data, onSelect } = this.props;
         const leftTextStyle = { 'textAlign': 'left' };

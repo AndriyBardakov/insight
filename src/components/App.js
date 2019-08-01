@@ -4,19 +4,42 @@ import Header from './header/Header';
 import Connector from './connector/Connector';
 import Grid from './grid/Grid';
 import Sidebar from './sidebar/Sidebar';
+import { SemanticToastContainer } from 'react-semantic-toasts';
+import 'react-semantic-toasts/styles/react-semantic-alert.css';
+import { displayMessage, parseUrl } from './helpers';
 
-const WS_URL = 'ws://95.216.78.62:9002';
-const ws = new WebSocket(WS_URL);
+// const WS_URL = 'ws://95.216.78.62:9002';
+let ws = null;
 
+const requestIds = {
+    gridData: 1,
+    dbInfo: 2
+}
+
+const validateIpAndPort = (input) => {
+    const parts = input.split(":");
+    const port = parts[1];
+    let ip = parts[0].split(".");
+    return validateNum(port, 1, 65535) &&
+        ip.length === 4 &&
+        ip.every(function (segment) {
+            return validateNum(segment, 0, 255);
+        });
+}
+
+const validateNum = (input, min, max) => {
+    const num = +input;
+    return num >= min && num <= max && input === num.toString();
+}
 class App extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { entries: [], selected: null, connected: false, serverUrl: '' };
+        this.state = { entries: [], selected: null, connected: false, serverUrl: '', dbInfo: {} };
         this.child = React.createRef();
     }
 
     // FOR TEST
-    getData = () => {
+    getTestData = () => {
         let newData = [];
         for (let i = 0; i < 300; i++) {
             newData.push({
@@ -30,6 +53,25 @@ class App extends React.Component {
             });
         }
         this.setGridData(newData);
+    }
+
+    loadGridData = (data) => {
+        data = data.map((d, i) => {
+            return {
+                "id": i + 1,
+                "type": d.type,
+                "entropy": null,
+                "significance": null,
+                "mectric": "",
+                "status": "",
+                "name": d.name
+            }
+        });
+        this.setGridData(data);
+    }
+
+    loadDBInfo = (dbInfo) => {
+        this.setState({ dbInfo });
     }
 
     setGridData = (data) => {
@@ -54,9 +96,12 @@ class App extends React.Component {
     }
 
     componentDidMount() {
-        ws.onopen = () => {
-            console.log('ws connection open');
-        }
+
+    }
+
+    closeConnection = () => {
+        ws.close();
+        console.log('connection closed');
     }
 
     onSelectRow = (e, info) => {
@@ -83,35 +128,74 @@ class App extends React.Component {
         }
     }
 
-    onSubmitConnector = (url, data) => {
+    onOpenConnection = () => {
         this.setState({ connected: true });
-        this.setState({ serverUrl: url });
-        // this.getData(); // FOR TEST
+        ws.send(JSON.stringify({
+            "request_id": requestIds.gridData,
+            "info": { "request_type": 2 }
+        }));
 
-        const obj = {
-            "request_id": 1,
-            "info": {
-                "request_type": 2
-            }
-        };
+        ws.send(JSON.stringify({
+            "request_id": requestIds.dbInfo,
+            "info": { "request_type": 6 }
+        }));
+    }
+    onMessage = (evt) => {
+        const res = JSON.parse(evt.data);
 
-        ws.send(JSON.stringify(obj));
-        ws.onmessage = evt => {
-            console.log(JSON.parse(evt.data));
-            const res = JSON.parse(evt.data);
-            let data = res.schema.fields;
-            data = data.map((d, i) => {
-                return {
-                    "id": i + 1,
-                    "type": d.type,
-                    "entropy": null,
-                    "significance": null,
-                    "mectric": "",
-                    "status": "",
-                    "name": d.name
+        switch (res.request_id) {
+            case requestIds.gridData:
+                this.setState({ serverUrl: evt.origin });
+                let data = res.schema.fields;
+                this.loadGridData(data);
+                break;
+            case requestIds.dbInfo:
+                this.loadDBInfo(res.dbinfo);
+                break;
+            default:
+                break;
+        }
+    }
+
+    onSubmitConnector = (url, cb) => {
+        url = parseUrl(url).url;
+        const prefix = parseUrl(url).prefix;
+
+        if (validateIpAndPort(url)) {
+            url = (prefix || 'ws://') + url;
+            try {
+                if (!ws) {
+                    ws = new WebSocket(url);
                 }
-            });
-            this.setGridData(data);
+                else {
+                    console.log('connection exists');
+                }
+
+                ws.onopen = evt => this.onOpenConnection();
+                ws.onmessage = evt => this.onMessage(evt);
+
+                ws.onerror = evt => {
+                    displayMessage("error", "Error in connection establishment.");
+                    ws = null;
+                }
+                ws.onclose = function (event) {
+                    console.log("WebSocket is closed now.");
+                    if (cb) {
+                        cb();
+                    }
+                    ws = null;
+                };
+            }
+            catch (e) {
+                displayMessage("error", "Wrong Url.");
+            }
+        }
+        else {
+            // displayMessage("warning", "Invalid Url. The URL's scheme must be either 'ws' or 'wss'");
+            displayMessage("warning", "Please use valid Url.");
+            if (cb) {
+                cb();
+            }
         }
     }
 
@@ -120,17 +204,23 @@ class App extends React.Component {
     }
 
     render() {
-        const { serverUrl, connected, entries } = this.state;
+        const { serverUrl, connected, entries, dbInfo } = this.state;
         return (
             <div className="insight-main-container ui container">
-                <Header server={serverUrl} connected={connected} onChangeServer={this.onChangeServer} />
+                <Header connected={connected} onChangeServer={this.onChangeServer} />
                 {connected ?
                     <div style={{ height: '100%' }}>
-                        <Grid data={entries} resolveData={data => data.map(row => row)} onSelect={this.onSelectRow} />
-                        <Sidebar ref={this.child} onChangeStatus={this.onChangeStatus} />
+                        <Grid data={entries} onClose={this.closeConnection} resolveData={data => data.map(row => row)} onSelect={this.onSelectRow} />
+                        <Sidebar
+                            ref={this.child}
+                            server={serverUrl}
+                            onChangeStatus={this.onChangeStatus}
+                            dbInfo={dbInfo}
+                        />
                     </div>
                     :
                     <Connector onSubmit={this.onSubmitConnector} />}
+                <SemanticToastContainer position="top-right" />
             </div>
         );
     }

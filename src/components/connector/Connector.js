@@ -22,15 +22,17 @@ class Connector extends React.Component {
         }
     }
 
+    clearConnectorForm = () => {
+        this.setUrl('');
+        this.setConnecting(false);
+    }
+
     onSubmit = () => {
         this.setConnecting(true);
         const that = this;
-
-        setTimeout(function () { // timer for simulate connection delay
-            that.props.onSubmit(that.state.url);
-            that.setUrl('');
-            that.setConnecting(false);
-        }, 300);
+        this.props.onSubmit(that.state.url, () => {
+            this.clearConnectorForm();
+        });
     }
 
     componentDidMount() {
@@ -39,6 +41,7 @@ class Connector extends React.Component {
 
     componentWillUnmount() {
         this._isMounted = false;
+        this.clearConnectorForm();
     }
 
     render() {

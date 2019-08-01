@@ -39,12 +39,12 @@ class Sidebar extends React.Component {
                         <Menu.Item >
                             <Accordion.Title
                                 active={activeItem.file}
-                                content="File"
+                                content="Source"
                                 onClick={this.onClickHandler}
                                 name="file"
                             />
                             <Accordion.Content active={activeItem.file}>
-                                <FileContent />
+                                <FileContent server={this.props.server} dbInfo={this.props.dbInfo} />
                             </Accordion.Content>
                         </Menu.Item>}
                     {activeItem.correlation ? null :
