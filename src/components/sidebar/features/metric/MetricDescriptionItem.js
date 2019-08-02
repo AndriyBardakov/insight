@@ -10,6 +10,7 @@ const MetricDescriptionItem = (props) => {
             active={activeIndex === index}
             index={index}
             onClick={handleClick}
+            type={title}
         >
             <List.Icon name="check circle" className={cls} />
             <List.Content>

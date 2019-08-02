@@ -55,3 +55,7 @@ export function parseUrl(url) {
 export function numberWithCommas(x) {
     return x ? x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") : '';
 }
+
+export function round(value) {
+    return Number(Math.round(value + 'e1') + 'e-1'); // round to 1 decimal
+}

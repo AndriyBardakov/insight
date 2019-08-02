@@ -51,8 +51,8 @@ class Grid extends React.Component {
                 maxWidth: 100
             },
             {
-                Header: 'Mectric',
-                accessor: 'mectric',
+                Header: 'Metric',
+                accessor: 'metric',
                 headerStyle: leftTextStyle,
                 maxWidth: 150
             },

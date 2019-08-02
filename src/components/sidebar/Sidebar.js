@@ -10,7 +10,7 @@ import Correlation from './features/correlation/Correlations';
 class Sidebar extends React.Component {
     constructor(props) {
         super(props);
-        this.child = React.createRef();
+        this.childMetric = React.createRef();
     }
     state = {
         activeItem: {
@@ -31,7 +31,7 @@ class Sidebar extends React.Component {
 
     render() {
         const { activeItem } = this.state;
-        const { server, dbInfo, metricType, onChangeStatus } = this.props;
+        const { server, dbInfo, onChangeStatus, onChangeMetric, onSubmitParamenters } = this.props;
         return (
             <div className="insight-sidebar">
                 <Accordion as={Menu} vertical>
@@ -56,7 +56,12 @@ class Sidebar extends React.Component {
                                 name="metric"
                             />
                             <Accordion.Content active={activeItem.metric}>
-                                <Metric ref={this.child} metricType={metricType} onChangeStatus={onChangeStatus} />
+                                <Metric
+                                    ref={this.childMetric}
+                                    onChangeStatus={onChangeStatus}
+                                    onChangeMetric={onChangeMetric}
+                                    onSubmitParamenters={onSubmitParamenters}
+                                />
                             </Accordion.Content>
                         </Menu.Item>}
                     {activeItem.correlation ? null :

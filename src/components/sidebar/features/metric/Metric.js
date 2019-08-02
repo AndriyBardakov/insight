@@ -10,13 +10,20 @@ class Metric extends React.Component{
     }
 
     render(){
-        const { onChangeStatus, metricType } = this.props;
+        const { onChangeStatus, onChangeMetric, onSubmitParamenters} = this.props;
         return (
             <div className="metric-content sidebar-content">
                 <h4 className="header">Metric</h4>
-                <MetricDescriptionList ref={this.childMetricDescriptionList} metricType={metricType} />
+                <MetricDescriptionList 
+                    ref={this.childMetricDescriptionList} 
+                    onChangeMetric={onChangeMetric} 
+                    onSubmitParamenters={onSubmitParamenters}
+                />
                 <h4 className="header">Status</h4>
-                <MetricStatusList ref={this.childMetricsStatusList} onChangeStatus={onChangeStatus} />
+                <MetricStatusList 
+                    ref={this.childMetricsStatusList} 
+                    onChangeStatus={onChangeStatus} 
+                />
             </div>
         );
     }

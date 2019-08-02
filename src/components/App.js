@@ -6,7 +6,7 @@ import Grid from './grid/Grid';
 import Sidebar from './sidebar/Sidebar';
 import { SemanticToastContainer } from 'react-semantic-toasts';
 import 'react-semantic-toasts/styles/react-semantic-alert.css';
-import { displayMessage, parseUrl } from './helpers';
+import { displayMessage, parseUrl, round } from './helpers';
 
 // const WS_URL = 'ws://95.216.78.62:9002';
 let ws = null;
@@ -14,7 +14,8 @@ let ws = null;
 const protocol = {
     gridData: { id: 1, type: 2 },
     dbInfo: { id: 2, type: 6 },
-    metricData: { id: 3, type: 5 }
+    metricData: { id: 3, type: 5 },
+    entropy: { id: 4 }
 }
 
 const validateIpAndPort = (input) => {
@@ -33,27 +34,43 @@ const validateNum = (input, min, max) => {
     return num >= min && num <= max && input === num.toString();
 }
 
-const sendRequest = (id, type) => {
-    ws.send(JSON.stringify({
-        "request_id": id,
-        "info": { "request_type": type }
-    }));
+const sendRequest = (id, type, body) => {
+    let req = { "request_id": id };
+
+    if (body) {
+        req[type] = body;
+    }
+    else {
+        req.info = { "request_type": type };
+    }
+    console.log(req);
+    ws.send(JSON.stringify(req));
 }
 class App extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { entries: [], selected: null, connected: false, serverUrl: '', dbInfo: {}, metricType: '' };
-        this.child = React.createRef();
+        this.state = { entries: [], selected: null, connected: false, serverUrl: '', dbInfo: {} };
+        this.childSidebar = React.createRef();
     }
 
-    loadGridData = (data) => {
+    getSelectedRowModel = (entries) => {
+        const { selected } = this.state;
+        if (selected) {
+            let row = entries.find(d => d.id === selected.original.id);
+            return row;
+        }
+        return null;
+    }
+
+    loadGridData = data => {
         data = data.map((d, i) => {
+            const { type } = d;
             return {
                 "id": i + 1,
-                "type": d.type,
+                "type": type === "undefined" ? "" : type,
                 "entropy": null,
                 "significance": null,
-                "mectric": "",
+                "metric": type === "int32" || type === "double" ? "Euclidian" : "",
                 "status": "",
                 "name": d.name
             }
@@ -61,7 +78,7 @@ class App extends React.Component {
         this.setGridData(data);
     }
 
-    setGridData = (data) => {
+    setGridData = data => {
         const status = {
             favourite: 0,
             normal: 1,
@@ -82,30 +99,67 @@ class App extends React.Component {
         this.setState({ entries: newData });
     }
 
+    setEntropy = entropy => {
+        const { entries } = this.state;
+        let model = this.getSelectedRowModel(entries);
+        if (model) {
+            model.entropy = round(entropy).toFixed(1);
+            this.setGridData(entries);
+        }
+    }
+
     componentDidMount() { }
 
     onSelectRow = (e, info) => {
         this.setState({ selected: info });
-        const { status, type } = info.original;
+        const { status, type, metric } = info.original;
         const index = status && status !== "normal" ? (status === "favourite" ? 1 : 2) : 0;
-        this.child.current.child.current.childMetricsStatusList.current.setActiveIndex(index);
-        this.setState({ metricType: type });
-        this.child.current.child.current.childMetricDescriptionList.current.setType(type);
+        const { childMetricsStatusList, childMetricDescriptionList } = this.childSidebar.current.childMetric.current;
+
+        childMetricsStatusList.current.setActiveIndex(index);
+        childMetricDescriptionList.current.setType(type, metric);
     }
 
-    onChangeStatus = (type) => {
-        const { selected, entries } = this.state;
-        if (selected) {
-            let row = entries.find(d => d.id === selected.original.id);
-            if (row) {
-                row.status = type;
-                this.setGridData(entries);
-                setTimeout(() => {
-                    const body = document.querySelector('.rt-tbody');
-                    const row = document.querySelector('.rt-tr.active');
-                    body.scrollTo(0, row.offsetTop - (type === "hidden" ? 0 : 55));
-                });
-            }
+    onChangeStatus = type => {
+        const { entries } = this.state;
+        let model = this.getSelectedRowModel(entries);
+        if (model) {
+            model.status = type;
+            this.setGridData(entries);
+            setTimeout(() => {
+                const body = document.querySelector('.rt-tbody');
+                const row = document.querySelector('.rt-tr.active');
+                body.scrollTo(0, row.offsetTop - (type === "hidden" ? 0 : 55));
+            });
+        }
+    }
+
+    onChangeMetric = metric => {
+        const { entries } = this.state;
+        let model = this.getSelectedRowModel(entries);
+        if (model) {
+            model.metric = metric;
+            this.setGridData(entries);
+        }
+    }
+
+    onSubmitParamenters = (param1, param2) => {
+        const { selected, dbInfo } = this.state;
+        const { start_time, end_time } = dbInfo;
+        const { name, metric } = selected.original;
+        if (metric) {
+            const body = {
+                start_time,
+                end_time,
+                metric,
+                "field": name,
+                "par1": param1 ? Number(param1) : '',
+                "par2": param2 ? Number(param2) : ''
+            };
+            sendRequest(protocol.entropy.id, "entropy", body);
+        }
+        else {
+            displayMessage("warning", "Please select metric.")
         }
     }
 
@@ -118,9 +172,9 @@ class App extends React.Component {
         sendRequest(metricData.id, metricData.type);
     }
 
-    onMessage = (evt) => {
+    onMessage = evt => {
         const res = JSON.parse(evt.data);
-        const { gridData, dbInfo, metricData } = protocol;
+        const { gridData, dbInfo, metricData, entropy } = protocol;
 
         console.log(res);
 
@@ -140,9 +194,14 @@ class App extends React.Component {
                     for (let m of metrics) {
                         obj[m.type] = m.metrics;
                     }
-                    this.child.current.child.current.childMetricDescriptionList.current.setMetrics(obj);
+                    this.childSidebar.current.childMetric.current.childMetricDescriptionList.current.setMetrics(obj);
                 }
-
+                break;
+            case entropy.id:
+                const { status, result } = res.calc_status;
+                if (status === "complete") {
+                    this.setEntropy(result.entropy);
+                }
                 break;
             default:
                 break;
@@ -201,7 +260,7 @@ class App extends React.Component {
     }
 
     render() {
-        const { serverUrl, connected, entries, dbInfo, metricType } = this.state;
+        const { serverUrl, connected, entries, dbInfo } = this.state;
         return (
             <div className="insight-main-container ui container">
                 <Header connected={connected} onChangeServer={this.onChangeServer} />
@@ -209,11 +268,12 @@ class App extends React.Component {
                     <div style={{ height: '100%' }}>
                         <Grid data={entries} onClose={this.closeConnection} resolveData={data => data.map(row => row)} onSelect={this.onSelectRow} />
                         <Sidebar
-                            ref={this.child}
+                            ref={this.childSidebar}
                             server={serverUrl}
                             onChangeStatus={this.onChangeStatus}
+                            onChangeMetric={this.onChangeMetric}
+                            onSubmitParamenters={this.onSubmitParamenters}
                             dbInfo={dbInfo}
-                            metricType={metricType}
                         />
                     </div>
                     :
