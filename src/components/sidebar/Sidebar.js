@@ -31,7 +31,7 @@ class Sidebar extends React.Component {
 
     render() {
         const { activeItem } = this.state;
-        const { server, dbInfo, onChangeStatus, onChangeMetric, onSubmitParamenters } = this.props;
+        const { server, dbInfo, onChangeStatus, onChangeMetric, onSubmitParamenters, onSubmitSignificance } = this.props;
         return (
             <div className="insight-sidebar">
                 <Accordion as={Menu} vertical>
@@ -73,7 +73,7 @@ class Sidebar extends React.Component {
                                 name="significanceAnalysis"
                             />
                             <Accordion.Content active={activeItem.significanceAnalysis}>
-                                <SignificanceAnalysis />
+                                <SignificanceAnalysis onSubmitSignificance={onSubmitSignificance} />
                             </Accordion.Content>
                         </Menu.Item>}
                     {activeItem.correlation ? null :

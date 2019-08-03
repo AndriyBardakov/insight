@@ -81,7 +81,7 @@ class SignificanceAnalysis extends React.Component {
 
     render() {
         return (
-            <Form className="sidebar-content feature-form" onSubmit={this.onSubmitHandler}>
+            <Form className="sidebar-content feature-form" onSubmit={() => { this.props.onSubmitSignificance(this.state.quality)}}>
                 <QualitySlider marks={marks} value={this.state.quality} valueLabelDisplay="on" onChange={this.onChangeQuality} />
                 <Divider />
                 <Button primary type='submit' style={{ margin: 0 }}>Set Quality</Button>
