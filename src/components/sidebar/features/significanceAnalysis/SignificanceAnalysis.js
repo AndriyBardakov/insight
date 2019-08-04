@@ -73,7 +73,7 @@ const roundToNumber = (value) => {
 
 class SignificanceAnalysis extends React.Component {
     state = {
-        quality: [30, 60],
+        quality: [0, 100],
         min: 0,
         max: 100,
         marks: [
@@ -82,8 +82,8 @@ class SignificanceAnalysis extends React.Component {
                 label: '0'
             },
             {
-                value: 1,
-                label: '1'
+                value: 100,
+                label: '100'
             }
         ]
     };
