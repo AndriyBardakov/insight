@@ -57,5 +57,5 @@ export function numberWithCommas(x) {
 }
 
 export function round(value) {
-    return Number(Math.round(value + 'e1') + 'e-1'); // round to 1 decimal
+    return Number(Math.round(value + 'e1') + 'e-1').toFixed(1); // round to 1 decimal
 }

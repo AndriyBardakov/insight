@@ -11,6 +11,7 @@ class Sidebar extends React.Component {
     constructor(props) {
         super(props);
         this.childMetric = React.createRef();
+        this.childSignificance = React.createRef();
     }
     state = {
         activeItem: {
@@ -73,7 +74,7 @@ class Sidebar extends React.Component {
                                 name="significanceAnalysis"
                             />
                             <Accordion.Content active={activeItem.significanceAnalysis}>
-                                <SignificanceAnalysis onSubmitSignificance={onSubmitSignificance} />
+                                <SignificanceAnalysis ref={this.childSignificance} onSubmitSignificance={onSubmitSignificance} />
                             </Accordion.Content>
                         </Menu.Item>}
                     {activeItem.correlation ? null :

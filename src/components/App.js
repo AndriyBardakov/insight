@@ -126,15 +126,17 @@ class App extends React.Component {
 
     loadGridData = data => {
         data = data.map((d, i) => {
-            const { type } = d;
+            const { type, name, minvalue, maxvalue } = d;
             return {
-                "id": i + 1,
-                "type": type === "undefined" ? "" : type,
-                "entropy": null,
-                "significance": null,
-                "metric": type === "int32" || type === "double" || type === "bool" ? "Euclidian" : "",
-                "status": "",
-                "name": d.name
+                name,
+                minvalue,
+                maxvalue,
+                entropy: round(d.entropy),
+                id: i + 1,
+                type: type === "undefined" ? "" : type,
+                significance: null,
+                metric: type === "int32" || type === "double" || type === "bool" ? "Euclidian" : "",
+                status: ""
             }
         });
         this.setGridData(data);
@@ -163,12 +165,13 @@ class App extends React.Component {
 
     onSelectRow = (e, info) => {
         this.setState({ selected: info });
-        const { status, type, metric } = info.original;
+        const { status, type, metric, minvalue, maxvalue } = info.original;
         const index = status && status !== "normal" ? (status === "favourite" ? 1 : 2) : 0;
         const { childMetricsStatusList, childMetricDescriptionList } = this.childSidebar.current.childMetric.current;
 
         childMetricsStatusList.current.setActiveIndex(index);
         childMetricDescriptionList.current.setType(type, metric);
+        this.childSidebar.current.childSignificance.current.setSliderRange(minvalue, maxvalue);
     }
 
     loadDefaultEntropy = () => {
@@ -240,7 +243,7 @@ class App extends React.Component {
         let modelId = id;
         let model = this.getSelectedRowModel(entries, modelId);
         if (model) {
-            model.entropy = round(entropy).toFixed(1);
+            model.entropy = round(entropy);
             this.setGridData(entries);
         }
     }
@@ -250,8 +253,8 @@ class App extends React.Component {
         const { batchEntropy } = this;
         entries.forEach(e => {
             let temp = batchEntropy.find(b => b.id === e.id);
-            if(temp){
-                e.entropy = round(temp.value).toFixed(1);
+            if (temp) {
+                e.entropy = round(temp.value);
             }
         });
         this.setGridData(entries);
@@ -259,10 +262,10 @@ class App extends React.Component {
 
     // ===> end Parameter settings <===
 
-     // ===> start Significance <===
+    // ===> start Significance <===
 
     onSubmitSignificance = values => {
-        if(values.length){
+        if (values.length) {
             const { selected, dbInfo, entries } = this.state;
             const { start_time, end_time } = dbInfo;
             const { name } = selected.original;
@@ -279,8 +282,8 @@ class App extends React.Component {
                 start_time,
                 end_time,
                 fields,
-                response_field : name,
-                response_function : res
+                response_field: name,
+                response_function: res
             };
             sendRequest(protocol.significance.id, "significance", body);
         }
@@ -290,12 +293,12 @@ class App extends React.Component {
         const { entries } = this.state;
         let model = this.getSelectedRowModel(entries);
         if (model) {
-            model.significance = round(value).toFixed(1);
+            model.significance = round(value);
             this.setGridData(entries);
         }
     }
 
-     // ===> end Significance <===
+    // ===> end Significance <===
 
     onMessage = evt => {
         const res = JSON.parse(evt.data);
@@ -344,7 +347,7 @@ class App extends React.Component {
                         value: res.calc_status.result.entropy
                     });
 
-                    if(this.batchEntropy.length === this.state.entries.length){
+                    if (this.batchEntropy.length === this.state.entries.length) {
                         console.log('last response')
                         this.setBatchEntropy();
                     }
