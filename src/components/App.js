@@ -115,10 +115,10 @@ class App extends React.Component {
 
     // ===> start Grid manipulations <===
 
-    getSelectedRowModel = async (entries, id) => {
+    getSelectedRowModel = (entries) => {
         const { selected } = this.state;
-        if (selected || id) {
-            let row = entries.find(d => d.id === selected ? selected.original.id : id);
+        if (selected) {
+            let row = entries.find(d => d.id === selected.original.id);
             return row;
         }
         return null;
@@ -238,13 +238,11 @@ class App extends React.Component {
     setEntropy = (entropy, id) => {
         const { entries } = this.state;
         let modelId = id;
-        this.getSelectedRowModel(entries, modelId)
-        .then(function(model){
-            if (model) {
-                model.entropy = round(entropy).toFixed(1);
-                this.setGridData(entries);
-            }
-        }.bind(this))
+        let model = this.getSelectedRowModel(entries, modelId);
+        if (model) {
+            model.entropy = round(entropy).toFixed(1);
+            this.setGridData(entries);
+        }
     }
 
     setBatchEntropy = () => {
@@ -263,19 +261,37 @@ class App extends React.Component {
 
      // ===> start Significance <===
 
-    onSubmitSignificance = (values) => {
+    onSubmitSignificance = values => {
         if(values.length){
-            const { selected, dbInfo } = this.state;
+            const { selected, dbInfo, entries } = this.state;
             const { start_time, end_time } = dbInfo;
             const { name } = selected.original;
             const res = values.join(';');
+            let fields = entries.filter(e => e.name !== name).map(e => {
+                return {
+                    field: e.name,
+                    metric: e.metric,
+                    "par1": '',
+                    "par2": ''
+                };
+            });
             const body = {
                 start_time,
                 end_time,
-                field : name,
-                "response" : res,
+                fields,
+                response_field : name,
+                response_function : res
             };
             sendRequest(protocol.significance.id, "significance", body);
+        }
+    }
+
+    setSignificance = value => {
+        const { entries } = this.state;
+        let model = this.getSelectedRowModel(entries);
+        if (model) {
+            model.significance = round(value).toFixed(1);
+            this.setGridData(entries);
         }
     }
 
@@ -293,7 +309,7 @@ class App extends React.Component {
                 break;
             case dbInfo.id:
                 this.setState({ dbInfo: res.dbinfo });
-                this.loadDefaultEntropy();
+                // this.loadDefaultEntropy();
                 break;
             case metricData.id:
                 const { metrics } = res;
@@ -313,8 +329,12 @@ class App extends React.Component {
                 break;
             case significance.id:
                 const signStatus = res.calc_status.status;
+                const signResult = res.calc_status.result;
                 if (signStatus === "error") {
                     displayMessage("error", "No calculation possible for selected values.");
+                }
+                else if (signStatus === "complete") {
+                    this.setSignificance(signResult.significance);
                 }
                 break;
             default:

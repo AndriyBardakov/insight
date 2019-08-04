@@ -49,6 +49,7 @@ class MetricDescriptionList extends React.Component {
             this.toggleList(false, true);
         }
         this.setMetric(metric);
+        this.setState({param1: '', param2: ''});
     }
 
     toggleList = (showList, emptyType) => {
