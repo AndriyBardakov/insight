@@ -270,20 +270,26 @@ class App extends React.Component {
             const { start_time, end_time } = dbInfo;
             const { name } = selected.original;
             const res = values.join(';');
-            let fields = entries.filter(e => e.name !== name).map(e => {
-                return {
-                    field: e.name,
-                    metric: e.metric,
-                    "par1": '',
-                    "par2": ''
-                };
-            });
+            // let fields = entries.filter(e => e.name !== name).map(e => {
+            //     return {
+            //         field: e.name,
+            //         metric: e.metric,
+            //         "par1": '',
+            //         "par2": ''
+            //     };
+            // });
+            // const body = {
+            //     start_time,
+            //     end_time,
+            //     fields,
+            //     response_field: name,
+            //     response_function: res
+            // };
             const body = {
                 start_time,
                 end_time,
-                fields,
-                response_field: name,
-                response_function: res
+                field: name,
+                response: res
             };
             sendRequest(protocol.significance.id, "significance", body);
         }
