@@ -4,7 +4,6 @@ import { Accordion, Menu } from 'semantic-ui-react';
 import FileContent from './features/file/FileContent';
 import Metric from './features/metric/Metric';
 import SignificanceAnalysis from './features/significanceAnalysis/SignificanceAnalysis';
-import Forecast from './features/forecast/Forecast';
 import Correlation from './features/correlation/Correlations';
 
 class Sidebar extends React.Component {
@@ -32,7 +31,7 @@ class Sidebar extends React.Component {
 
     render() {
         const { activeItem } = this.state;
-        const { server, dbInfo, onChangeStatus, onChangeMetric, onSubmitParamenters, onSubmitSignificance } = this.props;
+        const { server, dbInfo, onChangeStatus, onChangeMetric, onSubmitParamenters, onSubmitSignificance, onSubmitForecast } = this.props;
         return (
             <div className="insight-sidebar">
                 <Accordion as={Menu} vertical>
@@ -74,19 +73,7 @@ class Sidebar extends React.Component {
                                 name="significanceAnalysis"
                             />
                             <Accordion.Content active={activeItem.significanceAnalysis}>
-                                <SignificanceAnalysis ref={this.childSignificance} onSubmitSignificance={onSubmitSignificance} />
-                            </Accordion.Content>
-                        </Menu.Item>}
-                    {activeItem.correlation ? null :
-                        <Menu.Item >
-                            <Accordion.Title
-                                active={activeItem.forecast}
-                                content="Forecast"
-                                onClick={this.onClickHandler}
-                                name="forecast"
-                            />
-                            <Accordion.Content active={activeItem.forecast}>
-                                <Forecast />
+                                <SignificanceAnalysis ref={this.childSignificance} onSubmitSignificance={onSubmitSignificance} onSubmitForecast={onSubmitForecast} />
                             </Accordion.Content>
                         </Menu.Item>}
                     <Menu.Item >

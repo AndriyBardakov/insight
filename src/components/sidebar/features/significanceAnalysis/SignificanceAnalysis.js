@@ -2,7 +2,7 @@ import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Slider from '@material-ui/core/Slider';
 import { Form, Button, Divider } from 'semantic-ui-react';
-import {round} from '../../../helpers';
+import { round } from '../../../helpers';
 
 const boxShadow =
     '0 3px 1px rgba(0,0,0,0.1),0 4px 8px rgba(0,0,0,0.13),0 0 0 1px rgba(0,0,0,0.02)';
@@ -67,12 +67,17 @@ const QualitySlider = withStyles({
 //     },
 // ];
 
-const roundToNumber = (value) => {
+const roundToNumber = value => {
     return Number(round(value));
+}
+
+const numberToPercent = value => {
+    return Math.round(value * 100) + '%';
 }
 
 class SignificanceAnalysis extends React.Component {
     state = {
+        accuracy: 1,
         quality: [0, 100],
         min: 0,
         max: 100,
@@ -92,7 +97,13 @@ class SignificanceAnalysis extends React.Component {
         this.setState({ quality: value });
     };
 
+    setAccuracy = accuracy => {
+        this.setState({ accuracy });
+    }
+
     setSliderRange = (min, max) => {
+        min = Number(min);
+        max = Number(max);
         if (min === max) {
             max += 1;
         }
@@ -105,19 +116,30 @@ class SignificanceAnalysis extends React.Component {
                 value: max,
                 label: max
             }
-        ];  
+        ];
         this.setState({ marks, min, max, quality: [roundToNumber(min), roundToNumber(max)] });
         // this.setState({quality: [min, max]});
     }
 
     render() {
-        const { quality, min, max } = this.state;
+        const { quality, min, max, accuracy } = this.state;
         return (
-            <Form className="sidebar-content feature-form" onSubmit={() => { this.props.onSubmitSignificance(quality) }}>
-                <QualitySlider min={roundToNumber(min)} max={roundToNumber(max)} value={quality} valueLabelDisplay="on" onChange={this.onChangeQuality} />
-                <Divider />
-                <Button primary type='submit' style={{ margin: 0 }}>Set Quality</Button>
-            </Form>
+            <div className="sidebar-content">
+                <Form className="sidebar-content feature-form" onSubmit={() => this.props.onSubmitSignificance(quality)}>
+                    <QualitySlider min={roundToNumber(min)} max={roundToNumber(max)} value={quality} valueLabelDisplay="on" onChange={this.onChangeQuality} />
+                    <Divider />
+                    <Button primary type='submit' style={{ margin: 0 }}>Set Quality</Button>
+                </Form>
+                <h4 className="header">Forecast</h4>
+                <Form className="sidebar-content feature-form" onSubmit={() => this.props.onSubmitForecast(quality)}>
+                    <Button primary type='submit'>Calculate accuracy</Button>
+                    {/* <Form.Field type='number' readOnly control='input' value={accuracy} /> */}
+                    <div className="header" style={{marginTop: '10px'}}>
+                        <span>Accuracy: </span>
+                        <span className="description" style={{color:'#333333'}}>{numberToPercent(accuracy)}</span>
+                    </div>
+                </Form>
+            </div>
         );
     }
 }

@@ -16,7 +16,8 @@ const protocol = {
     dbInfo: { id: 2, type: 6 },
     metricData: { id: 3, type: 5 },
     entropy: { id: 4, startId: 10000 },
-    significance: { id: 5 }
+    significance: { id: 5 },
+    forecast: { id: 6 }
 }
 
 const validateIpAndPort = (input) => {
@@ -266,25 +267,10 @@ class App extends React.Component {
 
     onSubmitSignificance = values => {
         if (values.length) {
-            const { selected, dbInfo, entries } = this.state;
+            const { selected, dbInfo } = this.state;
             const { start_time, end_time } = dbInfo;
             const { name } = selected.original;
             const res = values.join(';');
-            // let fields = entries.filter(e => e.name !== name).map(e => {
-            //     return {
-            //         field: e.name,
-            //         metric: e.metric,
-            //         "par1": '',
-            //         "par2": ''
-            //     };
-            // });
-            // const body = {
-            //     start_time,
-            //     end_time,
-            //     fields,
-            //     response_field: name,
-            //     response_function: res
-            // };
             const body = {
                 start_time,
                 end_time,
@@ -292,6 +278,7 @@ class App extends React.Component {
                 response: res
             };
             sendRequest(protocol.significance.id, "significance", body);
+            this.onSubmitForecast(values);
         }
     }
 
@@ -304,13 +291,39 @@ class App extends React.Component {
         }
     }
 
+    onSubmitForecast = (values) => {
+        if (values.length) {
+            const { selected, dbInfo, entries } = this.state;
+            const { start_time, end_time } = dbInfo;
+            const { name } = selected.original;
+            const res = values.join(';');
+            let fields = entries.filter(e => e.name !== name).map(e => {
+                return {
+                    field: e.name,
+                    metric: e.metric,
+                    "par1": '',
+                    "par2": ''
+                };
+            });
+            const body = {
+                start_time,
+                end_time,
+                fields,
+                response_field: name,
+                response_function: res
+            };
+
+            sendRequest(protocol.forecast.id, "mdt", body);
+        }
+    }
+
     // ===> end Significance <===
 
     onMessage = evt => {
         const res = JSON.parse(evt.data);
-        const { gridData, dbInfo, metricData, entropy, significance } = protocol;
+        const { gridData, dbInfo, metricData, entropy, significance, forecast } = protocol;
 
-        switch (res.request_id || true) {
+        switch (res.request_id) {
             case gridData.id:
                 this.setState({ serverUrl: evt.origin });
                 let data = res.schema.fields;
@@ -331,33 +344,34 @@ class App extends React.Component {
                 }
                 break;
             case entropy.id:
-                const { status, result } = res.calc_status;
-                if (status === "complete") {
-                    this.setEntropy(result.entropy);
-                }
-                break;
             case significance.id:
-                const signStatus = res.calc_status.status;
-                const signResult = res.calc_status.result;
-                if (signStatus === "error") {
-                    displayMessage("error", "No calculation possible for selected values.");
-                }
-                else if (signStatus === "complete") {
-                    this.setSignificance(signResult.significance);
+            case forecast.id:  
+                const { status, result } = res.calc_status;
+
+                switch(res.request_id){
+                    case entropy.id:
+                        if (status === "complete") {
+                            this.setEntropy(result.entropy);
+                        }
+                        break;
+                    case significance.id:
+                        if (status === "error") {
+                            displayMessage("error", "No calculation possible for selected values.");
+                        }
+                        else if (status === "complete") {
+                            this.setSignificance(result.significance);
+                        }
+                        break;
+                    case forecast.id:
+                        if (status === "complete") {
+                            this.childSidebar.current.childSignificance.current.setAccuracy(result.accuracy);
+                        }
+                        break;
+                    default:
+                        break;
                 }
                 break;
             default:
-                if (res.calc_status.status === "complete") {
-                    this.batchEntropy.push({
-                        id: res.request_id - entropy.startId,
-                        value: res.calc_status.result.entropy
-                    });
-
-                    if (this.batchEntropy.length === this.state.entries.length) {
-                        console.log('last response')
-                        this.setBatchEntropy();
-                    }
-                }
                 break;
         }
     }
@@ -382,6 +396,7 @@ class App extends React.Component {
                             onChangeMetric={this.onChangeMetric}
                             onSubmitParamenters={this.onSubmitParamenters}
                             onSubmitSignificance={this.onSubmitSignificance}
+                            onSubmitForecast={this.onSubmitForecast}
                             dbInfo={dbInfo}
                         />
                     </div>
