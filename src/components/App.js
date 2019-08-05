@@ -322,7 +322,7 @@ class App extends React.Component {
         }
     }
 
-    onDeleteQuality = () => {
+    deleteQuality = () => {
         const { entries } = this.state;
         const model = this.getQualityRowModel(entries);
         if(model){
@@ -374,6 +374,7 @@ class App extends React.Component {
                         }
                         else if (status === "complete") {
                             this.setSignificance(result.significance);
+                            this.deleteQuality();
                             this.onChangeStatus('quality');
                             this.childSidebar.current.childSignificance.current.setQualityRow(true);
                         }
@@ -413,7 +414,7 @@ class App extends React.Component {
                             onSubmitParamenters={this.onSubmitParamenters}
                             onSubmitSignificance={this.onSubmitSignificance}
                             onSubmitForecast={this.onSubmitForecast}
-                            onDeleteQuality={this.onDeleteQuality}
+                            onDeleteQuality={this.deleteQuality}
                             dbInfo={dbInfo}
                         />
                     </div>
