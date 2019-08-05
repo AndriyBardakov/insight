@@ -125,6 +125,8 @@ class App extends React.Component {
         return null;
     }
 
+    getQualityRowModel = entries => entries.find(d => d.status === "quality");
+
     loadGridData = data => {
         data = data.map((d, i) => {
             const { type, name, minvalue, maxvalue } = d;
@@ -145,9 +147,10 @@ class App extends React.Component {
 
     setGridData = data => {
         const status = {
-            favourite: 0,
-            normal: 1,
-            hidden: 2
+            quality: 0,
+            favourite: 1,
+            normal: 2,
+            hidden: 3
         };
         const newData = data.sort((a, b) => {
             if (!a.status) a.status = "normal";
@@ -201,11 +204,13 @@ class App extends React.Component {
         let model = this.getSelectedRowModel(entries);
         if (model) {
             model.status = type;
+
             this.setGridData(entries);
+            const offset = this.getQualityRowModel(entries) ? 55 : 0;
             setTimeout(() => {
                 const body = document.querySelector('.rt-tbody');
                 const row = document.querySelector('.rt-tr.active');
-                body.scrollTo(0, row.offsetTop - (type === "hidden" ? 0 : 55));
+                body.scrollTo(0, row.offsetTop - (type === "hidden" ? 0 : 55) - offset);
             });
         }
     }
@@ -317,6 +322,15 @@ class App extends React.Component {
         }
     }
 
+    onDeleteQuality = () => {
+        const { entries } = this.state;
+        const model = this.getQualityRowModel(entries);
+        if(model){
+            model.status = "normal";
+            this.setGridData(entries);
+        }
+    }
+
     // ===> end Significance <===
 
     onMessage = evt => {
@@ -360,6 +374,8 @@ class App extends React.Component {
                         }
                         else if (status === "complete") {
                             this.setSignificance(result.significance);
+                            this.onChangeStatus('quality');
+                            this.childSidebar.current.childSignificance.current.setQualityRow(true);
                         }
                         break;
                     case forecast.id:
@@ -397,6 +413,7 @@ class App extends React.Component {
                             onSubmitParamenters={this.onSubmitParamenters}
                             onSubmitSignificance={this.onSubmitSignificance}
                             onSubmitForecast={this.onSubmitForecast}
+                            onDeleteQuality={this.onDeleteQuality}
                             dbInfo={dbInfo}
                         />
                     </div>

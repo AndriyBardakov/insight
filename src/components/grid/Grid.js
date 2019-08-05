@@ -63,7 +63,7 @@ class Grid extends React.Component {
                 maxWidth: 80,
                 Cell: (row) => {
                     const { status } = row.original;
-                    return status && status !== 'normal' ? (status === 'favourite' ? <i className="star icon"></i> : <i className="low vision icon"></i>) : ''
+                    return status && status !== 'normal' ? (status === 'favourite' ? <i className="star icon"></i> : (status === 'quality' ? <span className="quality-icon"><span>Q</span><i className="star icon"></i></span> : <i className="low vision icon"></i>)) : ''
                 },
                 style: { textAlign: 'center' }
             },
@@ -98,9 +98,22 @@ class Grid extends React.Component {
                                 style: {
                                     background: rowInfo.original.id === this.state.selected ? '#d9eaf7' : 'inherit'
                                 },
-                                className: rowInfo.original.id === this.state.selected ? 'active' : ''
+                                className: (rowInfo.original.id === this.state.selected ? 'active' : '')
                             }
                         } 
+                        else {
+                            return {}
+                        }
+                    }}
+                    getTrGroupProps={(state, rowInfo) => {
+                        if (rowInfo && rowInfo.row) {
+                            return {
+                                style: {
+                                    background: rowInfo.original.status === 'quality' ? '#e5e5e5' : 'inherit'
+                                },
+                                className: (rowInfo.original.status === 'quality' ? ' quality-row' : '')
+                            }
+                        }
                         else {
                             return {}
                         }

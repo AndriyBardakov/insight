@@ -66,6 +66,16 @@
         margin-bottom: 10px;
     }
 
+    .ui.vertical.menu .sidebar-content.feature-form .button.btn-delete{
+        margin-top:10px;
+        background: red;
+        color:#ffffff;
+    } 
+
+    .ui.vertical.menu .sidebar-content.feature-form .button.btn-delete:hover{
+        background: '#dc0909';
+    } 
+
     .ui.vertical.menu .sidebar-content .MuiSlider-marked {
         margin-bottom: 0;
     }

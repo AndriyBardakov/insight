@@ -14,16 +14,41 @@
     display: none;
 }
 
-.grid-container .ReactTable .rt-th.rt-resizable-header{
+.grid-container .ReactTable .rt-th.rt-resizable-header {
     height: 55px;
-    padding-top:18px;
+    padding-top: 18px;
 }
-.grid-container .ReactTable .rt-th.rt-resizable-header .rt-resizable-header-content{
+
+.grid-container .ReactTable .rt-th.rt-resizable-header .rt-resizable-header-content {
     font-size: 12pt;
-    color:#a8a8a8;
+    color: #a8a8a8;
 }
+
 .grid-container .ReactTable .rt-tbody .rt-td {
     height: 55px;
     padding: 20px 5px;
     font-size: 14pt;
+}
+
+.grid-container .ReactTable .rt-tbody .rt-td .quality-icon {
+    position: relative;
+}
+
+.grid-container .ReactTable .rt-tbody .rt-td .quality-icon>span {
+    font-size: 10px;
+    color: #fff;
+    left: 8px;
+    position: absolute;
+    top: 1px;
+}
+
+.grid-container .ReactTable .rt-tbody .rt-td .quality-icon>.star {
+    color: orange;
+}
+.grid-container .ReactTable .rt-tbody .rt-tr-group.quality-row{
+    position:fixed;
+    width:100%;
+}
+.grid-container .ReactTable .rt-tbody .rt-tr-group.quality-row + .rt-tr-group {
+    margin-top:55px;
 }

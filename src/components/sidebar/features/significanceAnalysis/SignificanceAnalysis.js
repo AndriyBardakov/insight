@@ -78,6 +78,7 @@ const numberToPercent = value => {
 class SignificanceAnalysis extends React.Component {
     state = {
         accuracy: 1,
+        qualityRowExists:false,
         quality: [0, 100],
         min: 0,
         max: 100,
@@ -101,6 +102,10 @@ class SignificanceAnalysis extends React.Component {
         this.setState({ accuracy });
     }
 
+    setQualityRow = qualityRowExists => {
+        this.setState({ qualityRowExists });
+    }
+
     setSliderRange = (min, max) => {
         min = Number(min);
         max = Number(max);
@@ -122,16 +127,18 @@ class SignificanceAnalysis extends React.Component {
     }
 
     render() {
-        const { quality, min, max, accuracy } = this.state;
+        const { quality, min, max, accuracy, qualityRowExists } = this.state;
+        const { onSubmitForecast, onSubmitSignificance, onDeleteQuality } = this.props;
         return (
             <div className="sidebar-content">
-                <Form className="sidebar-content feature-form" onSubmit={() => this.props.onSubmitSignificance(quality)}>
+                <Form className="sidebar-content feature-form" onSubmit={() => onSubmitSignificance(quality)}>
                     <QualitySlider min={roundToNumber(min)} max={roundToNumber(max)} value={quality} valueLabelDisplay="on" onChange={this.onChangeQuality} />
                     <Divider />
-                    <Button primary type='submit' style={{ margin: 0 }}>Set Quality</Button>
+                    <Button primary type='submit' style={{ margin: 0 }}>Set Quality Characteristic</Button>
+                    {qualityRowExists ? <Button type='button' className="btn-delete" onClick={() => {this.setQualityRow(false); onDeleteQuality();}}>Delete Quality Characteristic</Button> : ''}
                 </Form>
                 <h4 className="header">Forecast</h4>
-                <Form className="sidebar-content feature-form" onSubmit={() => this.props.onSubmitForecast(quality)}>
+                <Form className="sidebar-content feature-form" onSubmit={() => onSubmitForecast(quality)}>
                     <Button primary type='submit'>Calculate accuracy</Button>
                     {/* <Form.Field type='number' readOnly control='input' value={accuracy} /> */}
                     <div className="header" style={{marginTop: '10px'}}>
