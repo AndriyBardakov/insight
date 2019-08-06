@@ -11,6 +11,7 @@ class Sidebar extends React.Component {
         super(props);
         this.childMetric = React.createRef();
         this.childSignificance = React.createRef();
+        this.childCorrelation = React.createRef();
     }
     state = {
         activeItem: {
@@ -27,11 +28,14 @@ class Sidebar extends React.Component {
         const { activeItem } = this.state;
         activeItem[name] = !activeItem[name];
         this.setState({ activeItem });
+        if(name === "correlation"){
+            this.props.onCorrelationActive(activeItem.correlation);
+        }
     }
 
     render() {
         const { activeItem } = this.state;
-        const { server, dbInfo, onChangeStatus, onChangeMetric, onSubmitParamenters, onSubmitSignificance, onDeleteQuality } = this.props;
+        const { server, dbInfo, onChangeStatus, onChangeMetric, onSubmitParamenters, onSubmitSignificance, onDeleteQuality, onSelectCorrelationTriangle } = this.props;
         return (
             <div className="insight-sidebar">
                 <Accordion as={Menu} vertical>
@@ -85,7 +89,7 @@ class Sidebar extends React.Component {
                             name="correlation"
                         />
                         <Accordion.Content active={activeItem.correlation}>
-                            <Correlation />
+                            <Correlation ref={this.childCorrelation} onSelectCorrelationTriangle={onSelectCorrelationTriangle} />
                         </Accordion.Content>
                     </Menu.Item>
                 </Accordion>

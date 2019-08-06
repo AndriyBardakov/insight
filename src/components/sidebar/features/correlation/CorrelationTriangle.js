@@ -225,36 +225,53 @@ function triangle(parent) {
 
 } // triangle
 
-
-function selected(tagid) {
-
-  const id = tagid.split('-');
-
-  dataUp({
-    line1: id[1],
-    line2: id[2]
-  });
-
-  //---------
-  // Clear all selctions
+function clearSelections() {
   d3.selectAll('.sel')
-    .attr('fill', 'rgb(255,255,255,0)')
-    .attr("stroke-width", 0);
-  d3.selectAll(`.txt`).style('font-weight', "normal");
-  d3.selectAll(".grp-exeption-selection").remove()
+      .attr('fill', 'rgb(255,255,255,0)')
+      .attr("stroke-width", 0);
+    d3.selectAll(`.txt`).style('font-weight', "normal");
+    d3.selectAll(".grp-exeption-selection").remove()
+}
+
+
+function selected(tagid, fromParent) {
+  const id = tagid.split('-');
+  let id1 = id[1];
+  let id2 = id[2];
+
+  if (!fromParent) {
+    dataUp({
+      line1: id1,
+      line2: id2
+    });
+
+    //---------
+    // Clear all selctions
+    clearSelections();
+  }
 
 
   //---------
-  if (+id[1] === 0) {
-    d3.select(`#${tagid}`)
-      .attr('stroke-width', 3)
-      .attr('stroke', selectionColor)
-      .attr('fill', selectionColor);
+  if (+id1 === 0) {
+    const indx1 = +id1;
+    const indx2 = +id2;
 
-    d3.select(`#sel-0-0`)
-      .attr('stroke-width', 3)
-      .attr('stroke', selectionColor)
-      .attr('fill', selectionColor);
+    for (let i = indx1; i <= indx2; i++) {
+      d3.select(`#sel-0-${i}`)
+        .attr('stroke-width', 3)
+        .attr('stroke', selectionColor)
+        .attr('fill', selectionColor);
+    }
+
+    // d3.select(`#${tagid}`)
+    //   .attr('stroke-width', 3)
+    //   .attr('stroke', selectionColor)
+    //   .attr('fill', selectionColor);
+
+    // d3.select(`#sel-0-0`)
+    //   .attr('stroke-width', 3)
+    //   .attr('stroke', selectionColor)
+    //   .attr('fill', selectionColor);
 
     // alert('null');
 
@@ -264,31 +281,37 @@ function selected(tagid) {
   //---------
   // show connection Line->Selection
 
-  for (var ii = 1; ii <= id[2]; ii++) {
-    d3.select(`#sel-${id[1]}-${ii}`)
+  for (var ii = 1; ii <= id2; ii++) {
+    d3.select(`#sel-${id1}-${ii}`)
       .attr('fill', selectionColor);
   }
-  for (ii = lineCount; ii >= id[1]; ii--) {
-    d3.select(`#sel-${ii}-${id[2]}`)
+  for (ii = lineCount; ii >= id1; ii--) {
+    d3.select(`#sel-${ii}-${id2}`)
       .attr('fill', selectionColor);
   }
-  d3.select(`#sel-0-${id[1]}`)
+  d3.select(`#sel-0-${id1}`)
     .attr('fill', selectionColor);
-  d3.select(`#sel-0-${id[2]}`)
+  d3.select(`#sel-0-${id2}`)
     .attr('fill', selectionColor);
 
   //---------
   // Style of the Selection
 
-  d3.select(`#${tagid}`)
-    .attr('fill', 'rgb(255,255,255,0)')
-    .attr('stroke-width', 3)
-    .attr('stroke', selectionColor)
-    ;
+  if (!fromParent) {
+    d3.select(`#${tagid}`)
+      .attr('fill', 'rgb(255,255,255,0)')
+      .attr('stroke-width', 3)
+      .attr('stroke', selectionColor)
+      ;
 
-  d3.select(`#txt-${id[1]}-${id[2]}`)
-    .style('font-weight', "bold")
-    ;
+    d3.select(`#txt-${id1}-${id2}`)
+      .style('font-weight', "bold")
+      ;
+  }
+  
+  if (id2 - id1 > 1) {
+    selected(`sel-${++id1}-${--id2}`, true);
+  }
 }
 
 function onmouseleave(tagid) {
@@ -349,6 +372,10 @@ class CorrelationTriangle extends React.Component {
     // console.log(nextProps);
     // this.updateAllSquares(nextProps);
     this.svg.updateAllSquares(nextProps);
+  }
+
+  clearSelections = () => {
+    clearSelections();
   }
 
   render() {

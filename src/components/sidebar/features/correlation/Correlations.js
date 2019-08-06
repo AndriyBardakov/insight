@@ -36,6 +36,10 @@ const generateValues = () => {
 // END GENERATE DATA FOR TRIANGLE
 
 class Correlation extends React.Component {
+    constructor(props) {
+        super(props);
+        this.childTriangle = React.createRef();
+    }
     _isMounted = true;
     state = { data: generateValues() }
 
@@ -68,6 +72,7 @@ class Correlation extends React.Component {
 
     dataFromChild = (dataFromChild) => {
         console.log(dataFromChild);
+        this.props.onSelectCorrelationTriangle(dataFromChild);
     }
 
     render() {
@@ -78,6 +83,7 @@ class Correlation extends React.Component {
                 lineHeight="56"
                 values={this.state.data}
                 dataToParent={this.dataFromChild}
+                ref={this.childTriangle}
             />
         );
     }

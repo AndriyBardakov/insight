@@ -52,11 +52,12 @@ class App extends React.Component {
         super(props);
         this.state = { entries: [], selected: null, connected: false, serverUrl: '', dbInfo: {} };
         this.childSidebar = React.createRef();
+        this.childGrid = React.createRef();
     }
 
     batchEntropy = [];
-    // ===> start Initial page <===
 
+    // ===> start Initial page <===
     onOpenConnection = () => {
         this.setState({ connected: true });
         const { gridData, dbInfo, metricData } = protocol;
@@ -111,11 +112,9 @@ class App extends React.Component {
     onChangeServer = () => {
         this.setState({ connected: false });
     }
-
     // ===> end Initial page <===
 
     // ===> start Grid manipulations <===
-
     getSelectedRowModel = (entries) => {
         const { selected } = this.state;
         if (selected) {
@@ -194,11 +193,9 @@ class App extends React.Component {
             sendRequest(protocol.entropy.startId + indx + 1, "entropy", body);
         });
     }
-
     // ===> end Grid manipulations <===
 
     // ===> start Parameter settings <===
-
     onChangeStatus = type => {
         const { entries } = this.state;
         let model = this.getSelectedRowModel(entries);
@@ -234,8 +231,8 @@ class App extends React.Component {
                 end_time,
                 metric,
                 "field": name,
-                "par1": param1 ? Number(param1) : '',
-                "par2": param2 ? Number(param2) : ''
+                "par1": param1 ? +param1 : '',
+                "par2": param2 ? +param2 : ''
             };
             sendRequest(protocol.entropy.id, "entropy", body);
         }
@@ -253,11 +250,9 @@ class App extends React.Component {
             this.setGridData(entries);
         }
     }
-
     // ===> end Parameter settings <===
 
     // ===> start Significance <===
-
     onSubmitSignificance = values => {
         if (values.length) {
             const { selected, dbInfo } = this.state;
@@ -279,7 +274,7 @@ class App extends React.Component {
         const { entries } = this.state;
         entries.forEach(entry => {
             let model = values.find(v => v.field === entry.name);
-            if(model){
+            if (model) {
                 entry.significance = round(model.value);
             }
         });
@@ -315,13 +310,33 @@ class App extends React.Component {
     deleteQuality = () => {
         const { entries } = this.state;
         const model = this.getQualityRowModel(entries);
-        if(model){
+        if (model) {
             model.status = "normal";
             this.setGridData(entries);
         }
     }
-
     // ===> end Significance <===
+
+    // ===> start Correlation <===
+    toggleCorrelation = active => {
+        this.childGrid.current.toggleCorrelation(active);
+        this.childSidebar.current.childCorrelation.current.childTriangle.current.clearSelections();
+    }
+
+    onSelectCorrelationTriangle = ({ line1, line2 }) => {
+        const { entries } = this.state;
+        let result = [];
+        const indx1 = +line1;
+        const indx2 = +line2;
+
+        for(let i = indx1; i <= indx2; i++){
+            result.push(entries[i].id);
+        }
+
+        console.log(result);
+        this.childGrid.current.setSelectedRows(result);
+    }
+    // ===> end Correlation <===
 
     onMessage = evt => {
         const res = JSON.parse(evt.data);
@@ -349,10 +364,10 @@ class App extends React.Component {
                 break;
             case entropy.id:
             case significance.id:
-            case forecast.id:  
+            case forecast.id:
                 const { status, result } = res.calc_status;
 
-                switch(res.request_id){
+                switch (res.request_id) {
                     case entropy.id:
                         if (status === "complete") {
                             this.setEntropy(result.entropy);
@@ -395,7 +410,13 @@ class App extends React.Component {
                 <Header connected={connected} onChangeServer={this.onChangeServer} />
                 {connected ?
                     <div style={{ height: '100%' }}>
-                        <Grid data={entries} onClose={this.closeConnection} resolveData={data => data.map(row => row)} onSelect={this.onSelectRow} />
+                        <Grid
+                            data={entries}
+                            onClose={this.closeConnection}
+                            resolveData={data => data.map(row => row)}
+                            onSelect={this.onSelectRow}
+                            ref={this.childGrid}
+                        />
                         <Sidebar
                             ref={this.childSidebar}
                             server={serverUrl}
@@ -404,6 +425,8 @@ class App extends React.Component {
                             onSubmitParamenters={this.onSubmitParamenters}
                             onSubmitSignificance={this.onSubmitSignificance}
                             onDeleteQuality={this.deleteQuality}
+                            onCorrelationActive={this.toggleCorrelation}
+                            onSelectCorrelationTriangle={this.onSelectCorrelationTriangle}
                             dbInfo={dbInfo}
                         />
                     </div>

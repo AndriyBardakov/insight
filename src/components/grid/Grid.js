@@ -10,7 +10,8 @@ class Grid extends React.Component {
 
         this.state = {
             data: this.props.data,
-            selected: null
+            selected: [],
+            isCorrelation: false
         };
     }
 
@@ -22,8 +23,22 @@ class Grid extends React.Component {
         this.props.onClose();
     }
 
+    toggleCorrelation = (isCorrelation) => {
+        const body = document.querySelector('.rt-tbody');
+
+        this.setState({ isCorrelation, selected: [] });
+        if (isCorrelation) {
+            body.scrollTo(0, 0);
+        }
+    }
+
+    setSelectedRows = (selected) => {
+        this.setState({ selected });
+    }
+
     render() {
         const { data, onSelect } = this.props;
+        const { isCorrelation, selected } = this.state;
         const leftTextStyle = { 'textAlign': 'left' };
         const columns = [
             {
@@ -73,7 +88,7 @@ class Grid extends React.Component {
                 headerStyle: leftTextStyle
             }
         ];
-        
+
         return (
             <div className="grid-container">
                 <ReactTable
@@ -86,21 +101,31 @@ class Grid extends React.Component {
                         height: "100%"
                     }}
                     className="-highlight"
+                    getTbodyProps={(state, rowInfo, column) => {
+                        return {
+                            style: {
+                                overflow: isCorrelation ? 'hidden' : 'auto'
+                            }
+                        }
+                    }}
                     getTrProps={(state, rowInfo) => {
                         if (rowInfo && rowInfo.row) {
+                            const rowId = rowInfo.original.id;
                             return {
                                 onClick: (e) => {
-                                    this.setState({
-                                        selected: rowInfo.original.id
-                                    });
-                                    onSelect(state, rowInfo);
+                                    if (!isCorrelation) {
+                                        this.setState({
+                                            selected: [rowId]
+                                        });
+                                        onSelect(state, rowInfo);
+                                    }
                                 },
                                 style: {
-                                    background: rowInfo.original.id === this.state.selected ? '#d9eaf7' : 'inherit'
+                                    background: selected.includes(rowId) ? '#d9eaf7' : 'inherit'
                                 },
-                                className: (rowInfo.original.id === this.state.selected ? 'active' : '')
+                                className: (selected.includes(rowId) ? 'active' : '')
                             }
-                        } 
+                        }
                         else {
                             return {}
                         }
