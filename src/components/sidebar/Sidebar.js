@@ -31,56 +31,52 @@ class Sidebar extends React.Component {
 
     render() {
         const { activeItem } = this.state;
-        const { server, dbInfo, onChangeStatus, onChangeMetric, onSubmitParamenters, onSubmitSignificance, onSubmitForecast, onDeleteQuality } = this.props;
+        const { server, dbInfo, onChangeStatus, onChangeMetric, onSubmitParamenters, onSubmitSignificance, onDeleteQuality } = this.props;
         return (
             <div className="insight-sidebar">
                 <Accordion as={Menu} vertical>
-                    {activeItem.correlation ? null :
-                        <Menu.Item >
-                            <Accordion.Title
-                                active={activeItem.file}
-                                content="Source"
-                                onClick={this.onClickHandler}
-                                name="file"
+                    <Menu.Item className={activeItem.correlation ? 'hidden' : ''}>
+                        <Accordion.Title
+                            active={activeItem.file}
+                            content="Source"
+                            onClick={this.onClickHandler}
+                            name="file"
+                        />
+                        <Accordion.Content active={activeItem.file}>
+                            <FileContent server={server} dbInfo={dbInfo} />
+                        </Accordion.Content>
+                    </Menu.Item>
+                    <Menu.Item className={activeItem.correlation ? 'hidden' : ''}>
+                        <Accordion.Title
+                            active={activeItem.metric}
+                            content="Parameter settings"
+                            onClick={this.onClickHandler}
+                            name="metric"
+                        />
+                        <Accordion.Content active={activeItem.metric}>
+                            <Metric
+                                ref={this.childMetric}
+                                onChangeStatus={onChangeStatus}
+                                onChangeMetric={onChangeMetric}
+                                onSubmitParamenters={onSubmitParamenters}
                             />
-                            <Accordion.Content active={activeItem.file}>
-                                <FileContent server={server} dbInfo={dbInfo} />
-                            </Accordion.Content>
-                        </Menu.Item>}
-                    {activeItem.correlation ? null :
-                        <Menu.Item >
-                            <Accordion.Title
-                                active={activeItem.metric}
-                                content="Parameter settings"
-                                onClick={this.onClickHandler}
-                                name="metric"
+                        </Accordion.Content>
+                    </Menu.Item>
+                    <Menu.Item className={activeItem.correlation ? 'hidden' : ''}>
+                        <Accordion.Title
+                            active={activeItem.significanceAnalysis}
+                            content="Significance analysis"
+                            onClick={this.onClickHandler}
+                            name="significanceAnalysis"
+                        />
+                        <Accordion.Content active={activeItem.significanceAnalysis}>
+                            <SignificanceAnalysis 
+                                ref={this.childSignificance} 
+                                onSubmitSignificance={onSubmitSignificance} 
+                                onDeleteQuality={onDeleteQuality}
                             />
-                            <Accordion.Content active={activeItem.metric}>
-                                <Metric
-                                    ref={this.childMetric}
-                                    onChangeStatus={onChangeStatus}
-                                    onChangeMetric={onChangeMetric}
-                                    onSubmitParamenters={onSubmitParamenters}
-                                />
-                            </Accordion.Content>
-                        </Menu.Item>}
-                    {activeItem.correlation ? null :
-                        <Menu.Item >
-                            <Accordion.Title
-                                active={activeItem.significanceAnalysis}
-                                content="Significance analysis"
-                                onClick={this.onClickHandler}
-                                name="significanceAnalysis"
-                            />
-                            <Accordion.Content active={activeItem.significanceAnalysis}>
-                                <SignificanceAnalysis 
-                                    ref={this.childSignificance} 
-                                    onSubmitSignificance={onSubmitSignificance} 
-                                    onSubmitForecast={onSubmitForecast} 
-                                    onDeleteQuality={onDeleteQuality}
-                                />
-                            </Accordion.Content>
-                        </Menu.Item>}
+                        </Accordion.Content>
+                    </Menu.Item>
                     <Menu.Item >
                         <Accordion.Title
                             active={activeItem.correlation}

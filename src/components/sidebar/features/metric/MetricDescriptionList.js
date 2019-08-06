@@ -77,7 +77,11 @@ class MetricDescriptionList extends React.Component {
         return (
             showList ?
                 <div>
-                    <List divided relaxed selection ref={this.childMetricDescriptionListItem} id="metrics-list" items={this.state.data.map(createItem.bind(this))} style={{ margin: 0 }} className="description-list"></List>
+                    <List divided relaxed selection id="metrics-list" 
+                        ref={this.childMetricDescriptionListItem} 
+                        items={this.state.data.map(createItem.bind(this))} 
+                        style={{ margin: 0 }} 
+                        className="description-list"></List>
                     <Form className="sidebar-content feature-form" onSubmit={() => { this.props.onSubmitParamenters(param1, param2) }}>
                         <Form.Field
                             control={Input}

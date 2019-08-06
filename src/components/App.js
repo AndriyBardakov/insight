@@ -254,18 +254,6 @@ class App extends React.Component {
         }
     }
 
-    setBatchEntropy = () => {
-        let { entries } = this.state;
-        const { batchEntropy } = this;
-        entries.forEach(e => {
-            let temp = batchEntropy.find(b => b.id === e.id);
-            if (temp) {
-                e.entropy = round(temp.value);
-            }
-        });
-        this.setGridData(entries);
-    }
-
     // ===> end Parameter settings <===
 
     // ===> start Significance <===
@@ -287,13 +275,15 @@ class App extends React.Component {
         }
     }
 
-    setSignificance = value => {
+    setSignificance = values => {
         const { entries } = this.state;
-        let model = this.getSelectedRowModel(entries);
-        if (model) {
-            model.significance = round(value);
-            this.setGridData(entries);
-        }
+        entries.forEach(entry => {
+            let model = values.find(v => v.field === entry.name);
+            if(model){
+                entry.significance = round(model.value);
+            }
+        });
+        this.setGridData(entries);
     }
 
     onSubmitForecast = (values) => {
@@ -413,7 +403,6 @@ class App extends React.Component {
                             onChangeMetric={this.onChangeMetric}
                             onSubmitParamenters={this.onSubmitParamenters}
                             onSubmitSignificance={this.onSubmitSignificance}
-                            onSubmitForecast={this.onSubmitForecast}
                             onDeleteQuality={this.deleteQuality}
                             dbInfo={dbInfo}
                         />

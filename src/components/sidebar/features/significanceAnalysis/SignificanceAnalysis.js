@@ -128,7 +128,7 @@ class SignificanceAnalysis extends React.Component {
 
     render() {
         const { quality, min, max, accuracy, qualityRowExists } = this.state;
-        const { onSubmitForecast, onSubmitSignificance, onDeleteQuality } = this.props;
+        const { onSubmitSignificance, onDeleteQuality } = this.props;
         return (
             <div className="sidebar-content">
                 <Form className="sidebar-content feature-form" onSubmit={() => onSubmitSignificance(quality)}>
@@ -138,8 +138,7 @@ class SignificanceAnalysis extends React.Component {
                     {qualityRowExists ? <Button type='button' className="btn-delete" onClick={() => {this.setQualityRow(false); onDeleteQuality();}}>Delete Quality Characteristic</Button> : ''}
                 </Form>
                 <h4 className="header">Forecast</h4>
-                <Form className="sidebar-content feature-form" onSubmit={() => onSubmitForecast(quality)}>
-                    <Button primary type='submit'>Calculate accuracy</Button>
+                <Form className="sidebar-content feature-form">
                     {/* <Form.Field type='number' readOnly control='input' value={accuracy} /> */}
                     <div className="header" style={{marginTop: '10px'}}>
                         <span>Accuracy: </span>

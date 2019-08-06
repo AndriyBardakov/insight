@@ -9,6 +9,10 @@
         left: auto!important;
     }
 
+    .insight-sidebar .hidden {
+        display: none !important;
+    }
+
     .ui.vertical.menu {
         width: 100%;
         height: 100%;
