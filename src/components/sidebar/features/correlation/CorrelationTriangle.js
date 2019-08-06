@@ -297,7 +297,7 @@ function selected(tagid, fromParent) {
   //---------
   // Style of the Selection
 
-  if (!fromParent) {
+  // if (!fromParent) {
     d3.select(`#${tagid}`)
       .attr('fill', 'rgb(255,255,255,0)')
       .attr('stroke-width', 3)
@@ -307,11 +307,11 @@ function selected(tagid, fromParent) {
     d3.select(`#txt-${id1}-${id2}`)
       .style('font-weight', "bold")
       ;
-  }
+  // }
   
-  if (id2 - id1 > 1) {
-    selected(`sel-${++id1}-${--id2}`, true);
-  }
+  // if (id2 - id1 > 1) {
+  //   selected(`sel-${++id1}-${--id2}`, true);
+  // }
 }
 
 function onmouseleave(tagid) {

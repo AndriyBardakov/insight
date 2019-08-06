@@ -329,9 +329,11 @@ class App extends React.Component {
         const indx1 = +line1;
         const indx2 = +line2;
 
-        for(let i = indx1; i <= indx2; i++){
-            result.push(entries[i].id);
-        }
+        result.push(entries[indx1].id);
+        result.push(entries[indx2].id);
+        // for(let i = indx1; i <= indx2; i++){
+        //     result.push(entries[i].id);
+        // }
 
         console.log(result);
         this.childGrid.current.setSelectedRows(result);
