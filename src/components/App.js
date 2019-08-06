@@ -207,7 +207,9 @@ class App extends React.Component {
             setTimeout(() => {
                 const body = document.querySelector('.rt-tbody');
                 const row = document.querySelector('.rt-tr.active');
-                body.scrollTo(0, row.offsetTop - (type === "hidden" ? 0 : 55) - offset);
+                if(row){
+                    body.scrollTo(0, row.offsetTop - (type === "hidden" ? 0 : 55) - offset);
+                }
             });
         }
     }
