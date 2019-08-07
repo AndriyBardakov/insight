@@ -1,5 +1,6 @@
 import React from 'react';
 import CorrelationTriangle from './CorrelationTriangle';
+const d3 = require('d3');
 
 const getRandom = () => {
     return +Math.random().toFixed(2);
@@ -46,7 +47,7 @@ class Correlation extends React.Component {
     componentDidMount() {
         let values = generateValues();
         this._isMounted = true;
-        this.setState({ data: values });
+        this.setState({ data: values, selected: {} });
     
         this.interval = setInterval(() => {
             if(this._isMounted){
@@ -72,7 +73,13 @@ class Correlation extends React.Component {
 
     dataFromChild = (dataFromChild) => {
         console.log(dataFromChild);
+        this.setState({selected: dataFromChild});
         this.props.onSelectCorrelationTriangle(dataFromChild);
+    }
+
+    setCorrelationValue = value => {
+        const {selected} = this.state;
+        d3.select(`#txt-${selected.line1}-${selected.line2}`).text(value);
     }
 
     render() {

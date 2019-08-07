@@ -17,7 +17,8 @@ const protocol = {
     metricData: { id: 3, type: 5 },
     entropy: { id: 4, startId: 10000 },
     significance: { id: 5 },
-    forecast: { id: 6 }
+    forecast: { id: 6 },
+    correlation: { id: 7 }
 }
 
 const validateIpAndPort = (input) => {
@@ -50,7 +51,7 @@ const sendRequest = (id, type, body) => {
 class App extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { entries: [], selected: null, connected: false, serverUrl: '', dbInfo: {} };
+        this.state = { entries: [], selected: null, connected: false, serverUrl: '', dbInfo: {},  };
         this.childSidebar = React.createRef();
         this.childGrid = React.createRef();
     }
@@ -326,25 +327,36 @@ class App extends React.Component {
     }
 
     onSelectCorrelationTriangle = ({ line1, line2 }) => {
-        const { entries } = this.state;
+        const { dbInfo, entries } = this.state;
+        const { start_time, end_time } = dbInfo;
         let result = [];
-        const indx1 = +line1;
-        const indx2 = +line2;
+        const entry1 = entries[+line1];
+        const entry2 = entries[+line2];
 
-        result.push(entries[indx1].id);
-        result.push(entries[indx2].id);
+        result.push(entry1.id);
+        result.push(entry2.id);
         // for(let i = indx1; i <= indx2; i++){
         //     result.push(entries[i].id);
         // }
 
         console.log(result);
         this.childGrid.current.setSelectedRows(result);
+        const body = {
+            start_time,
+            end_time,
+            fields: [
+                { name: entry1.name, metric: entry1.metric },
+                { name: entry2.name, metric: entry2.metric }
+            ]
+        };
+
+        sendRequest(protocol.correlation.id, "correlation", body);
     }
     // ===> end Correlation <===
 
     onMessage = evt => {
         const res = JSON.parse(evt.data);
-        const { gridData, dbInfo, metricData, entropy, significance, forecast } = protocol;
+        const { gridData, dbInfo, metricData, entropy, significance, forecast, correlation } = protocol;
 
         switch (res.request_id) {
             case gridData.id:
@@ -369,6 +381,7 @@ class App extends React.Component {
             case entropy.id:
             case significance.id:
             case forecast.id:
+            case correlation.id:
                 const { status, result } = res.calc_status;
 
                 switch (res.request_id) {
@@ -391,6 +404,12 @@ class App extends React.Component {
                     case forecast.id:
                         if (status === "complete") {
                             this.childSidebar.current.childSignificance.current.setAccuracy(result.accuracy);
+                        }
+                        break;
+                    case correlation.id:
+                        if (status === "complete") {
+                            const res = result.correlation[0].correlation;
+                            this.childSidebar.current.childCorrelation.current.setCorrelationValue(res);
                         }
                         break;
                     default:
