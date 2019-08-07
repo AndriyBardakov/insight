@@ -6,7 +6,7 @@ import Grid from './grid/Grid';
 import Sidebar from './sidebar/Sidebar';
 import { SemanticToastContainer } from 'react-semantic-toasts';
 import 'react-semantic-toasts/styles/react-semantic-alert.css';
-import { displayMessage, parseUrl, round } from './helpers';
+import { displayMessage, parseUrl, round, onGridSort } from './helpers';
 
 // const WS_URL = 'ws://95.216.78.62:9002';
 let ws = null;
@@ -325,6 +325,7 @@ class App extends React.Component {
             model.status = "normal";
             this.setGridData(entries);
         }
+        onGridSort(true);
     }
     // ===> end Significance <===
 
@@ -421,6 +422,7 @@ class App extends React.Component {
                             this.deleteQuality();
                             this.onChangeStatus('quality');
                             this.childSidebar.current.childSignificance.current.setQualityRow(true);
+                            onGridSort();
                         }
                         break;
                     case forecast.id:
@@ -431,7 +433,7 @@ class App extends React.Component {
                     case correlation.id:
                         if (status === "complete") {
                             const res = result.correlation[0].correlation;
-                            this.childSidebar.current.childCorrelation.current.setCorrelationValue(res);
+                            this.childSidebar.current.childCorrelation.current.setCorrelationValue(round(res));
                         }
                         break;
                     default:

@@ -2,6 +2,7 @@ import React from 'react';
 import ReactTable from "react-table";
 import "./Grid.css";
 import "react-table/react-table.css";
+import { onGridSort } from '../helpers';
 
 
 class Grid extends React.Component {
@@ -25,14 +26,17 @@ class Grid extends React.Component {
     }
 
     toggleCorrelation = (isCorrelation) => {
-        this.setState({ isCorrelation, selected: [], selectedByIndex: [] });
+        this.setState({ selected: [], selectedByIndex: [] });
         if (isCorrelation) {
-            this.scrollTop();
+            const body = document.querySelector('.rt-tbody');
+            body.scrollTo(0, 0);
         }
+
+        this.setState({ isCorrelation });
     }
 
     scrollTop = () => {
-        if(this.state.isCorrelation){
+        if (this.state.isCorrelation) {
             const body = document.querySelector('.rt-tbody');
             body.scrollTo(0, 0);
         }
@@ -45,15 +49,15 @@ class Grid extends React.Component {
     setSelectedRowsByIndex = (selectedByIndex, afterSort) => {
         const nodes = Array.prototype.slice.call(document.querySelector('.ReactTable .rt-tbody').children);
         const index = nodes.indexOf(document.querySelector('.ReactTable .quality-row'));
-        if(selectedByIndex[0] < index){
+        if (selectedByIndex[0] <= index) {
             --selectedByIndex[0];
         }
-        if(selectedByIndex[1] < index){
+        if (selectedByIndex[1] <= index) {
             --selectedByIndex[1];
         }
         this.setState({ selectedByIndex });
 
-        if(afterSort){
+        if (afterSort) {
             const id1 = nodes[selectedByIndex[0]].getAttribute('modelid');
             const id2 = nodes[selectedByIndex[1]].getAttribute('modelid');
             const model1 = this.props.data.find(d => d.id === +id1);
@@ -140,26 +144,13 @@ class Grid extends React.Component {
                         }
                     }}
                     onSortedChange={(newSorted, column, shiftKey) => {
-                        let rows = document.querySelectorAll('.ReactTable .rt-tr-group');
-                        rows.forEach((r, indx) => {
-                            r.style.marginTop = 0;
-                        });
+                        onGridSort();
 
-                        const qualityRow = document.querySelector('.ReactTable .quality-row');
-                        if (qualityRow) {
-                            var firstRow = document.querySelector('.ReactTable .rt-tr-group:not(.quality-row)');
-                            firstRow.style.marginTop = '55px';
-                        }
-                        rows = document.querySelectorAll('.ReactTable .rt-tr-group:not(.quality-row)');
-                        rows.forEach((r, indx) => {
-                            if (indx !== 0) {
-                                r.style.marginTop = 0;
+                        if (isCorrelation) {
+                            const { line1, line2 } = getCorrelationRows();
+                            if (line1 && line2) {
+                                this.setSelectedRowsByIndex([+line1, +line2], true);
                             }
-                        });
-
-                        if(isCorrelation){
-                            const corObj = getCorrelationRows();
-                            this.setSelectedRowsByIndex([+corObj.line1, +corObj.line2], true);
                         }
                     }}
                     getTrProps={(state, rowInfo) => {
@@ -191,7 +182,7 @@ class Grid extends React.Component {
                                     background: rowInfo.original.status === 'quality' ? '#e5e5e5' : 'inherit'
                                 },
                                 className: (rowInfo.original.status === 'quality' ? ' quality-row' : ''),
-                                modelId: rowInfo.original.id
+                                modelid: rowInfo.original.id
                             }
                         }
                         else {

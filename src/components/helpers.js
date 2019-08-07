@@ -59,3 +59,24 @@ export function numberWithCommas(x) {
 export function round(value) {
     return Number(Math.round(value + 'e1') + 'e-1').toFixed(1); // round to 1 decimal
 }
+
+export function onGridSort(clearStyleOnly) {
+    let rows = document.querySelectorAll('.ReactTable .rt-tr-group');
+    rows.forEach((r, indx) => {
+        r.style.marginTop = 0;
+    });
+
+    if(!clearStyleOnly){
+        const qualityRow = document.querySelector('.ReactTable .quality-row');
+        if (qualityRow) {
+            var firstRow = document.querySelector('.ReactTable .rt-tr-group:not(.quality-row)');
+            firstRow.style.marginTop = '55px';
+        }
+        rows = document.querySelectorAll('.ReactTable .rt-tr-group:not(.quality-row)');
+        rows.forEach((r, indx) => {
+            if (indx !== 0) {
+                r.style.marginTop = 0;
+            }
+        });
+    }
+}
