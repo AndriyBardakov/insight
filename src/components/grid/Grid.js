@@ -11,6 +11,7 @@ class Grid extends React.Component {
         this.state = {
             data: this.props.data,
             selected: [],
+            selectedByIndex: [],
             isCorrelation: false
         };
     }
@@ -24,10 +25,15 @@ class Grid extends React.Component {
     }
 
     toggleCorrelation = (isCorrelation) => {
-        const body = document.querySelector('.rt-tbody');
-
-        this.setState({ isCorrelation, selected: [] });
+        this.setState({ isCorrelation, selected: [], selectedByIndex: [] });
         if (isCorrelation) {
+            this.scrollTop();
+        }
+    }
+
+    scrollTop = () => {
+        if(this.state.isCorrelation){
+            const body = document.querySelector('.rt-tbody');
             body.scrollTo(0, 0);
         }
     }
@@ -36,9 +42,29 @@ class Grid extends React.Component {
         this.setState({ selected });
     }
 
+    setSelectedRowsByIndex = (selectedByIndex, afterSort) => {
+        const nodes = Array.prototype.slice.call(document.querySelector('.ReactTable .rt-tbody').children);
+        const index = nodes.indexOf(document.querySelector('.ReactTable .quality-row'));
+        if(selectedByIndex[0] < index){
+            --selectedByIndex[0];
+        }
+        if(selectedByIndex[1] < index){
+            --selectedByIndex[1];
+        }
+        this.setState({ selectedByIndex });
+
+        if(afterSort){
+            const id1 = nodes[selectedByIndex[0]].getAttribute('modelid');
+            const id2 = nodes[selectedByIndex[1]].getAttribute('modelid');
+            const model1 = this.props.data.find(d => d.id === +id1);
+            const model2 = this.props.data.find(d => d.id === +id2);
+            this.props.correlationRequest(model1, model2);
+        }
+    }
+
     render() {
-        const { data, onSelect } = this.props;
-        const { isCorrelation, selected } = this.state;
+        const { data, onSelect, getCorrelationRows } = this.props;
+        const { isCorrelation, selected, selectedByIndex } = this.state;
         const leftTextStyle = { 'textAlign': 'left' };
         const columns = [
             {
@@ -102,10 +128,38 @@ class Grid extends React.Component {
                     }}
                     className="-highlight"
                     getTbodyProps={(state, rowInfo, column) => {
+                        let isQuality = false;
+                        if (state.data.length) {
+                            isQuality = state.data.some(d => d.status === "quality");
+                        }
                         return {
                             style: {
                                 overflow: isCorrelation ? 'hidden' : 'auto'
+                            },
+                            className: (isQuality ? 'quality-tbl' : '')
+                        }
+                    }}
+                    onSortedChange={(newSorted, column, shiftKey) => {
+                        let rows = document.querySelectorAll('.ReactTable .rt-tr-group');
+                        rows.forEach((r, indx) => {
+                            r.style.marginTop = 0;
+                        });
+
+                        const qualityRow = document.querySelector('.ReactTable .quality-row');
+                        if (qualityRow) {
+                            var firstRow = document.querySelector('.ReactTable .rt-tr-group:not(.quality-row)');
+                            firstRow.style.marginTop = '55px';
+                        }
+                        rows = document.querySelectorAll('.ReactTable .rt-tr-group:not(.quality-row)');
+                        rows.forEach((r, indx) => {
+                            if (indx !== 0) {
+                                r.style.marginTop = 0;
                             }
+                        });
+
+                        if(isCorrelation){
+                            const corObj = getCorrelationRows();
+                            this.setSelectedRowsByIndex([+corObj.line1, +corObj.line2], true);
                         }
                     }}
                     getTrProps={(state, rowInfo) => {
@@ -121,9 +175,9 @@ class Grid extends React.Component {
                                     }
                                 },
                                 style: {
-                                    background: selected.includes(rowId) ? '#d9eaf7' : 'inherit'
+                                    background: (isCorrelation ? selectedByIndex.includes(rowInfo.viewIndex) : selected.includes(rowId)) ? '#d9eaf7' : 'inherit'
                                 },
-                                className: (selected.includes(rowId) ? 'active' : '')
+                                className: (isCorrelation ? selectedByIndex.includes(rowInfo.viewIndex) : selected.includes(rowId)) ? 'active' : ''
                             }
                         }
                         else {
@@ -136,12 +190,38 @@ class Grid extends React.Component {
                                 style: {
                                     background: rowInfo.original.status === 'quality' ? '#e5e5e5' : 'inherit'
                                 },
-                                className: (rowInfo.original.status === 'quality' ? ' quality-row' : '')
+                                className: (rowInfo.original.status === 'quality' ? ' quality-row' : ''),
+                                modelId: rowInfo.original.id
                             }
                         }
                         else {
                             return {}
                         }
+                    }}
+                    defaultSortMethod={(a, b, desc) => {
+                        // force null and undefined to the bottom
+                        a = a === null || a === undefined ? '' : a
+                        b = b === null || b === undefined ? '' : b
+
+                        if (!isNaN(Number(a))) {
+                            a = Number(a);
+                        }
+                        if (!isNaN(Number(b))) {
+                            b = Number(b);
+                        }
+                        // force any string values to lowercase
+                        a = typeof a === 'string' ? a.toLowerCase() : a
+                        b = typeof b === 'string' ? b.toLowerCase() : b
+                        // Return either 1 or -1 to indicate a sort priority
+                        if (a > b) {
+                            return 1
+                        }
+                        if (a < b) {
+                            return -1
+                        }
+                        // returning 0, undefined or any falsey value will use subsequent sorts or
+                        // the index as a tiebreaker
+                        return 0
                     }}
                 />
 

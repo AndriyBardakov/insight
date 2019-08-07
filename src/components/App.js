@@ -51,7 +51,7 @@ const sendRequest = (id, type, body) => {
 class App extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { entries: [], selected: null, connected: false, serverUrl: '', dbInfo: {},  };
+        this.state = { entries: [], selected: null, connected: false, serverUrl: '', dbInfo: {}, correlation: [] };
         this.childSidebar = React.createRef();
         this.childGrid = React.createRef();
     }
@@ -202,6 +202,7 @@ class App extends React.Component {
         let model = this.getSelectedRowModel(entries);
         if (model) {
             model.status = type;
+            model.significance = null;
 
             this.setGridData(entries);
             const offset = this.getQualityRowModel(entries) ? 55 : 0;
@@ -210,6 +211,7 @@ class App extends React.Component {
                 const row = document.querySelector('.rt-tr.active');
                 if(row){
                     body.scrollTo(0, row.offsetTop - (type === "hidden" ? 0 : 55) - offset);
+                    this.childGrid.current.scrollTop();
                 }
             });
         }
@@ -260,16 +262,22 @@ class App extends React.Component {
         if (values.length) {
             const { selected, dbInfo } = this.state;
             const { start_time, end_time } = dbInfo;
-            const { name } = selected.original;
-            const res = values.join(';');
-            const body = {
-                start_time,
-                end_time,
-                field: name,
-                response: res
-            };
-            sendRequest(protocol.significance.id, "significance", body);
-            this.onSubmitForecast(values);
+            if(selected){
+                const { name } = selected.original;
+                const res = values.join(';');
+                const body = {
+                    start_time,
+                    end_time,
+                    field: name,
+                    response: res
+                };
+                console.log(body);
+                sendRequest(protocol.significance.id, "significance", body);
+                this.onSubmitForecast(values);
+            }
+            else{
+                displayMessage("warning", "Please select parameter first.");
+            }
         }
     }
 
@@ -323,24 +331,34 @@ class App extends React.Component {
     // ===> start Correlation <===
     toggleCorrelation = active => {
         this.childGrid.current.toggleCorrelation(active);
+        this.setState({correlation: []});
         this.childSidebar.current.childCorrelation.current.childTriangle.current.clearSelections();
     }
 
     onSelectCorrelationTriangle = ({ line1, line2 }) => {
-        const { dbInfo, entries } = this.state;
-        const { start_time, end_time } = dbInfo;
+        const { entries } = this.state;
         let result = [];
-        const entry1 = entries[+line1];
-        const entry2 = entries[+line2];
+        const index1 = +line1;
+        const index2 = +line2;
+        const entry1 = entries[index1];
+        const entry2 = entries[index2];
 
-        result.push(entry1.id);
-        result.push(entry2.id);
+        result.push(index1);
+        result.push(index2);
         // for(let i = indx1; i <= indx2; i++){
         //     result.push(entries[i].id);
         // }
 
         console.log(result);
-        this.childGrid.current.setSelectedRows(result);
+        this.setState({correlation: result});
+        this.childGrid.current.setSelectedRowsByIndex(result);
+        this.correlationRequest(entry1, entry2);
+    }
+
+    correlationRequest = (entry1, entry2) => {
+        const { dbInfo } = this.state;
+        const { start_time, end_time } = dbInfo;
+
         const body = {
             start_time,
             end_time,
@@ -349,8 +367,12 @@ class App extends React.Component {
                 { name: entry2.name, metric: entry2.metric }
             ]
         };
-
         sendRequest(protocol.correlation.id, "correlation", body);
+    }
+
+    getCorrelationRows = () => {
+        // return this.state.correlation;
+        return this.childSidebar.current.childCorrelation.current.getCorrelation();
     }
     // ===> end Correlation <===
 
@@ -438,6 +460,8 @@ class App extends React.Component {
                             onClose={this.closeConnection}
                             resolveData={data => data.map(row => row)}
                             onSelect={this.onSelectRow}
+                            getCorrelationRows={this.getCorrelationRows}
+                            correlationRequest={this.correlationRequest}
                             ref={this.childGrid}
                         />
                         <Sidebar

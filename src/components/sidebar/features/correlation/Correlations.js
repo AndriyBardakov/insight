@@ -81,6 +81,10 @@ class Correlation extends React.Component {
         const {selected} = this.state;
         d3.select(`#txt-${selected.line1}-${selected.line2}`).text(value);
     }
+    
+    getCorrelation = () => {
+        return this.state.selected;
+    }
 
     render() {
         return (
