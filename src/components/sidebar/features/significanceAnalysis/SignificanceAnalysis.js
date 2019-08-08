@@ -109,9 +109,6 @@ class SignificanceAnalysis extends React.Component {
     setSliderRange = (min, max) => {
         min = Number(min);
         max = Number(max);
-        if (min === max) {
-            max += 1;
-        }
         const marks = [
             {
                 value: min,

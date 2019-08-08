@@ -392,13 +392,20 @@ class App extends React.Component {
                 // this.loadDefaultEntropy();
                 break;
             case metricData.id:
-                const { metrics } = res;
+                const { metrics, params } = res;
                 if (metrics && metrics.length) {
-                    let obj = {};
+                    let objMetrics = {};
+                    let objParams = {};
                     for (let m of metrics) {
-                        obj[m.type] = m.metrics;
+                        objMetrics[m.type] = m.metrics;
                     }
-                    this.childSidebar.current.childMetric.current.childMetricDescriptionList.current.setMetrics(obj);
+                    for (let p of params) {
+                        objParams[p.metric_name] = {
+                            parameters: p.parameters,
+                            parameters_amount: p.parameters_amount
+                        };
+                    }
+                    this.childSidebar.current.childMetric.current.childMetricDescriptionList.current.setMetrics(objMetrics, objParams);
                 }
                 break;
             case entropy.id:
