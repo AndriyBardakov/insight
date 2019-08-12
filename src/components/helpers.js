@@ -80,3 +80,20 @@ export function onGridSort(clearStyleOnly) {
         });
     }
 }
+
+export function setWaitingCursor (wait) {
+    var cursor = 'appWaitCursorBackground';
+    const container = document.querySelector('.ReactTable');
+    container.style.cursor = wait ? 'wait' : '';
+
+    if (wait) {
+        document.querySelector('#' + cursor).style.display = "block";
+        // if (timeout !== 0) {
+        //     setTimeout(function () {
+        //         document.querySelector('#' + cursor).style.display = "none";
+        //     }, timeout ? timeout : 3000);
+        // }
+    } else {
+        document.querySelector('#' + cursor).style.display = "none";
+    }
+};

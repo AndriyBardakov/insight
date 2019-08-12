@@ -132,11 +132,10 @@ class SignificanceAnalysis extends React.Component {
                     <QualitySlider min={roundToNumber(min)} max={roundToNumber(max)} value={quality} valueLabelDisplay="on" onChange={this.onChangeQuality} />
                     <Divider />
                     <Button primary type='submit' style={{ margin: 0 }}>Set Quality Characteristic</Button>
-                    {qualityRowExists ? <Button type='button' className="btn-delete" onClick={() => {this.setQualityRow(false); onDeleteQuality();}}>Delete Quality Characteristic</Button> : ''}
+                    {qualityRowExists ? <Button type='button' className="btn-delete" onClick={() => {this.setQualityRow(false); onDeleteQuality(true);}}>Delete Quality Characteristic</Button> : ''}
                 </Form>
                 <h4 className="header">Forecast</h4>
                 <Form className="sidebar-content feature-form">
-                    {/* <Form.Field type='number' readOnly control='input' value={accuracy} /> */}
                     <div className="header" style={{marginTop: '10px'}}>
                         <span>Accuracy: </span>
                         <span className="description" style={{color:'#333333'}}>{numberToPercent(accuracy)}</span>

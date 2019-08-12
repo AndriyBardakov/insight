@@ -71,7 +71,7 @@ function triangle(parent) {
 
   this.updateSquare = function (id, value) {
 
-    if (value) {
+    if (value !== null) {
       d3.select(`#sq-${id}`)
         .attr('fill', this.color(value))
         .attr('stroke', this.color(value))
@@ -182,11 +182,11 @@ function triangle(parent) {
       }
     }
 
-    Object.keys(values).forEach((p) => {
-      Object.keys(values[p]).forEach((c) => {
-        this.updateSquare(`${p}-${c}`, values[p][c]);
-      })
-    })
+    // Object.keys(values).forEach((p) => {
+    //   Object.keys(values[p]).forEach((c) => {
+    //     this.updateSquare(`${p}-${c}`, values[p][c]);
+    //   })
+    // })
 
 
   }
@@ -199,7 +199,6 @@ function triangle(parent) {
   this.init = function (object) {
 
     lineCount = values.length;
-    // console.log("lineCount: " + lineCount);
 
     this.svg
       .attr("width", (lineCount * object.lineHeight) * 0.5 + (+object.lineHeight * 0.5))
@@ -210,13 +209,11 @@ function triangle(parent) {
 
 
   this.updateAllSquares = (props) => {
-
     let values = props.values;
 
     Object.keys(values).forEach((p) => {
       Object.keys(values[p]).forEach((c) => {
         this.updateSquare(`${p}-${c}`, values[p][c]);
-        // console.log(`update: ${p}-${c}`);
       })
     })
 
@@ -356,6 +353,7 @@ class CorrelationTriangle extends React.Component {
 
     x = props.x;
     y = props.y;
+    
     values = props.values;
     lineHeight = props.lineHeight;
 
@@ -363,15 +361,25 @@ class CorrelationTriangle extends React.Component {
   }
 
   componentDidMount() {
+    // this.svg = new triangle(d3.select(this.triangle));
+    // this.svg.init(this.props);
+  }
+
+  triangleInit = () => {
     this.svg = new triangle(d3.select(this.triangle));
     this.svg.init(this.props);
+    // this.svg.updateAllSquares(this.props);
+  }
+
+  updateSquare = (id, value) => {
+    if(this.svg){
+      this.svg.updateSquare(id, value);
+    }
   }
 
   componentDidUpdate(nextProps) {
     // this.svg.plot(nextProps)
-    // console.log(nextProps);
-    // this.updateAllSquares(nextProps);
-    this.svg.updateAllSquares(nextProps);
+    // this.svg.updateAllSquares(nextProps);
   }
 
   clearSelections = () => {

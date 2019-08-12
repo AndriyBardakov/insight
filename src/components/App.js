@@ -6,7 +6,7 @@ import Grid from './grid/Grid';
 import Sidebar from './sidebar/Sidebar';
 import { SemanticToastContainer } from 'react-semantic-toasts';
 import 'react-semantic-toasts/styles/react-semantic-alert.css';
-import { displayMessage, parseUrl, round, onGridSort } from './helpers';
+import { displayMessage, parseUrl, round, onGridSort, setWaitingCursor } from './helpers';
 
 // const WS_URL = 'ws://95.216.78.62:9002';
 let ws = null;
@@ -18,7 +18,7 @@ const protocol = {
     entropy: { id: 4, startId: 10000 },
     significance: { id: 5 },
     forecast: { id: 6 },
-    correlation: { id: 7 }
+    correlation: { id: 7, batchId: 8 }
 }
 
 const validateIpAndPort = (input) => {
@@ -51,7 +51,7 @@ const sendRequest = (id, type, body) => {
 class App extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { entries: [], selected: null, connected: false, serverUrl: '', dbInfo: {}, correlation: [] };
+        this.state = { entries: [], selected: null, connected: false, serverUrl: '', dbInfo: {}, correlation: [], correlationIds: {} };
         this.childSidebar = React.createRef();
         this.childGrid = React.createRef();
     }
@@ -87,6 +87,7 @@ class App extends React.Component {
 
                 ws.onerror = evt => {
                     displayMessage("error", "Error in connection establishment.");
+                    setWaitingCursor(false);
                     ws = null;
                 }
                 ws.onclose = function (event) {
@@ -181,7 +182,6 @@ class App extends React.Component {
     loadDefaultEntropy = () => {
         const { dbInfo, entries } = this.state;
         const { start_time, end_time } = dbInfo;
-        console.log('first request')
         entries.forEach((d, indx) => {
             const body = {
                 start_time,
@@ -209,7 +209,7 @@ class App extends React.Component {
             setTimeout(() => {
                 const body = document.querySelector('.rt-tbody');
                 const row = document.querySelector('.rt-tr.active');
-                if(row){
+                if (row) {
                     body.scrollTo(0, row.offsetTop - (type === "hidden" ? 0 : 55) - offset);
                     this.childGrid.current.scrollTop();
                 }
@@ -262,7 +262,7 @@ class App extends React.Component {
         if (values.length) {
             const { selected, dbInfo } = this.state;
             const { start_time, end_time } = dbInfo;
-            if(selected){
+            if (selected) {
                 const { name } = selected.original;
                 const res = values.join(';');
                 const body = {
@@ -271,11 +271,12 @@ class App extends React.Component {
                     field: name,
                     response: res
                 };
-                console.log(body);
+                this.removeCorrelationTriangle();
+                setWaitingCursor(true);
                 sendRequest(protocol.significance.id, "significance", body);
                 this.onSubmitForecast(values);
             }
-            else{
+            else {
                 displayMessage("warning", "Please select parameter first.");
             }
         }
@@ -318,7 +319,7 @@ class App extends React.Component {
         }
     }
 
-    deleteQuality = () => {
+    deleteQuality = (clearSelected) => {
         const { entries } = this.state;
         const model = this.getQualityRowModel(entries);
         if (model) {
@@ -326,14 +327,19 @@ class App extends React.Component {
             this.setGridData(entries);
         }
         onGridSort(true);
+        if (clearSelected) {
+            this.setState({ selected: null });
+        }
+        this.childSidebar.current.childCorrelation.current.clearSelections();
+        this.removeCorrelationTriangle();
     }
     // ===> end Significance <===
 
     // ===> start Correlation <===
     toggleCorrelation = active => {
         this.childGrid.current.toggleCorrelation(active);
-        this.setState({correlation: []});
-        this.childSidebar.current.childCorrelation.current.childTriangle.current.clearSelections();
+        this.setState({ correlation: [] });
+        this.clearCorrelationTriangle();
     }
 
     onSelectCorrelationTriangle = ({ line1, line2 }) => {
@@ -346,12 +352,8 @@ class App extends React.Component {
 
         result.push(index1);
         result.push(index2);
-        // for(let i = indx1; i <= indx2; i++){
-        //     result.push(entries[i].id);
-        // }
 
-        console.log(result);
-        this.setState({correlation: result});
+        this.setState({ correlation: result });
         this.childGrid.current.setSelectedRowsByIndex(result);
         this.correlationRequest(entry1, entry2);
     }
@@ -368,12 +370,47 @@ class App extends React.Component {
                 { name: entry2.name, metric: entry2.metric }
             ]
         };
+
         sendRequest(protocol.correlation.id, "correlation", body);
+    }
+
+    getCorrelationData = (data) => {
+        const { entries, correlationIds } = this.state;
+        const { dbInfo } = this.state;
+        const { start_time, end_time } = dbInfo;
+        const lines = 11;
+        const targetData = data || entries;
+        let fields = [];
+
+        for (let i = 0; i < lines; i++) {
+            let model = targetData[i];
+            const { name, metric } = model;
+            fields.push({ name, metric });
+            correlationIds[name] = i;
+        }
+        this.setState({ correlationIds });
+        const body = {
+            start_time,
+            end_time,
+            fields
+        };
+        sendRequest(protocol.correlation.batchId, "correlation", body);
     }
 
     getCorrelationRows = () => {
         // return this.state.correlation;
         return this.childSidebar.current.childCorrelation.current.getCorrelation();
+    }
+
+    clearCorrelationTriangle = () => {
+        this.childSidebar.current.childCorrelation.current.childTriangle.current.clearSelections();
+    }
+
+    removeCorrelationTriangle = () => {
+        const el = document.getElementById('triangle_svg');
+        if (el) {
+            el.remove();
+        }
     }
     // ===> end Correlation <===
 
@@ -412,6 +449,7 @@ class App extends React.Component {
             case significance.id:
             case forecast.id:
             case correlation.id:
+            case correlation.batchId:
                 const { status, result } = res.calc_status;
 
                 switch (res.request_id) {
@@ -423,13 +461,17 @@ class App extends React.Component {
                     case significance.id:
                         if (status === "error") {
                             displayMessage("error", "No calculation possible for selected values.");
+                            setWaitingCursor(false);
                         }
                         else if (status === "complete") {
                             this.setSignificance(result.significance);
                             this.deleteQuality();
                             this.onChangeStatus('quality');
                             this.childSidebar.current.childSignificance.current.setQualityRow(true);
+                            setWaitingCursor(false);
                             onGridSort();
+                            this.childSidebar.current.childCorrelation.current.childTriangle.current.triangleInit();
+                            this.getCorrelationData();
                         }
                         break;
                     case forecast.id:
@@ -441,6 +483,15 @@ class App extends React.Component {
                         if (status === "complete") {
                             const res = result.correlation[0].correlation;
                             this.childSidebar.current.childCorrelation.current.setCorrelationValue(round(res));
+                        }
+                        break;
+                    case correlation.batchId:
+                        if (status === "complete") {
+                            const { correlationIds } = this.state;
+                            console.log('correlation data: ' + JSON.stringify(result.correlation));
+                            result.correlation.forEach(({ field1, field2, correlation }) => {
+                                this.childSidebar.current.childCorrelation.current.childTriangle.current.updateSquare(`${correlationIds[field1]}-${correlationIds[field2]}`, correlation);
+                            });
                         }
                         break;
                     default:
@@ -471,6 +522,7 @@ class App extends React.Component {
                             onSelect={this.onSelectRow}
                             getCorrelationRows={this.getCorrelationRows}
                             correlationRequest={this.correlationRequest}
+                            getCorrelationData={this.getCorrelationData}
                             ref={this.childGrid}
                         />
                         <Sidebar

@@ -15,6 +15,7 @@ class Grid extends React.Component {
             selectedByIndex: [],
             isCorrelation: false
         };
+        this.reactTable = React.createRef();
     }
 
     static defaultProps = {
@@ -122,6 +123,7 @@ class Grid extends React.Component {
         return (
             <div className="grid-container">
                 <ReactTable
+                    ref={this.reactTable}
                     data={data}
                     columns={columns}
                     pageSize={data.length}
@@ -148,6 +150,14 @@ class Grid extends React.Component {
 
                         if (isCorrelation) {
                             const { line1, line2 } = getCorrelationRows();
+                            let sortedData = this.reactTable.current.getResolvedState().sortedData.map(d => d._original);
+                            const quality = sortedData.find(s => s.status === "quality");
+                            sortedData = sortedData.filter(s => s.status !== "quality");
+                            sortedData.unshift(quality);
+                            if(quality){
+                                this.props.getCorrelationData(sortedData);
+                            }
+
                             if (line1 && line2) {
                                 this.setSelectedRowsByIndex([+line1, +line2], true);
                             }
@@ -215,7 +225,13 @@ class Grid extends React.Component {
                         return 0
                     }}
                 />
-
+                <div id="appWaitCursorBackground">
+                    <div className="waiting-spinner">
+                        <span>Calculation...</span>
+                        <br/>
+                        <i className="spinner loading icon"></i>
+                    </div>
+                </div>
             </div>
         );
     }

@@ -7,6 +7,36 @@
     height: 100%;
 }
 
-#root *:not(i){
-    font-family: Roboto,Helvetica,sans-serif !important;
+#root *:not(i) {
+    font-family: Roboto, Helvetica, sans-serif !important;
+}
+
+#appWaitCursorBackground {
+    position: absolute;
+    top: 55px;
+    right: 356px;
+    bottom: 0;
+    left: 0;
+    z-index: 9999999;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: none;
+}
+
+#appWaitCursorBackground .waiting-spinner {
+    display: block;
+    margin: 0 auto;
+    top: 45%;
+    position: relative;
+    text-align: center;
+}
+
+#appWaitCursorBackground .waiting-spinner span {
+    color: #333333;
+    font-size: 18px;
+}
+
+#appWaitCursorBackground .waiting-spinner .spinner {
+    position: relative;
+    top: 2px;
+    font-size: 24px;
 }

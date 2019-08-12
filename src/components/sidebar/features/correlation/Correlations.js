@@ -1,6 +1,5 @@
 import React from 'react';
 import CorrelationTriangle from './CorrelationTriangle';
-const d3 = require('d3');
 
 const getRandom = () => {
     return +Math.random().toFixed(2);
@@ -41,49 +40,33 @@ class Correlation extends React.Component {
         super(props);
         this.childTriangle = React.createRef();
     }
-    _isMounted = true;
     state = { data: generateValues() }
+    // state = { data: [] }
 
     componentDidMount() {
         let values = generateValues();
-        this._isMounted = true;
         this.setState({ data: values, selected: {} });
-    
-        this.interval = setInterval(() => {
-            if(this._isMounted){
-                let v = getRandom();
-                let l1 = Math.floor(Math.random() * values.length);
-                let l2 = Math.floor(Math.random() * values.length);
-
-                if (this.state.data[l1][l2] == null) {
-                    // console.log("l1: " + l1 + " // l2: " + l2 + " // v: " + v);
-
-                    let dataNew = this.state.data;
-                    dataNew[l1][l2] = v;
-
-                    this.setState({ data: dataNew });
-                }
-            }
-        }, 1000);
     }
 
     componentWillUnmount() {
-        this._isMounted = false;
     }
 
     dataFromChild = (dataFromChild) => {
-        console.log(dataFromChild);
         this.setState({selected: dataFromChild});
         this.props.onSelectCorrelationTriangle(dataFromChild);
     }
 
     setCorrelationValue = value => {
         const {selected} = this.state;
-        d3.select(`#txt-${selected.line1}-${selected.line2}`).text(value);
+        this.childTriangle.current.updateSquare(`${selected.line1}-${selected.line2}`, value);
     }
     
     getCorrelation = () => {
         return this.state.selected;
+    }
+
+    clearSelections = () => {
+        this.setState({selected: {}});
     }
 
     render() {
